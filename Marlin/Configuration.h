@@ -131,7 +131,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_13_EFB //MFD: was BOARD_RAMPS_14_EFB
+  #define MOTHERBOARD BOARD_RAMPS_14_EFB 
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -704,7 +704,7 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-//MFD: enabled this
+//MFD: enabled DRV8825 1/32 microsteps
 #define X_DRIVER_TYPE  DRV8825
 #define Y_DRIVER_TYPE  DRV8825
 #define Z_DRIVER_TYPE  DRV8825
@@ -723,7 +723,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-//MFD: enabled this
+//MFD: enabled endstop interrupt
 #define ENDSTOP_INTERRUPTS_FEATURE
 
 /**
@@ -770,7 +770,7 @@
  */
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 52.2 }  // 52.4 is correct for printer as shipped
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 104.4 }   // 104.4 with 32 micro steps enabled gives better results
-#define DEFAULT_AXIS_STEPS_PER_UNIT  {160,160,8010,180} //MFD: steps using the 1/32 driver DRV8825
+#define DEFAULT_AXIS_STEPS_PER_UNIT  {160,160,8000,191.4} //MFD: steps/mm using the 1/32 driver DRV8825 (E was measured on 2019_5_25)
 
 
 /**
@@ -1165,11 +1165,11 @@
 #define Y_BED_SIZE (Y_MAX_POS-Y_MIN_POS)
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS 6
-#define Y_MIN_POS 3
+#define X_MIN_POS 0 //MFD was 6
+#define Y_MIN_POS 0 //MFD was 3
 #define Z_MIN_POS 0
-#define X_MAX_POS 207
-#define Y_MAX_POS 182
+#define X_MAX_POS 210 //MFD was 207
+#define Y_MAX_POS 220 //MFD was 182
 #define Z_MAX_POS 175
 
 /**
@@ -1251,7 +1251,7 @@
  * - AUTO_BED_LEVELING_LINEAR
  *   Probe several points in a grid.
  *   You specify the rectangle and the density of sample points.
- *   The result is a single tilted plane. Best for a flat bed.
+ *   The result is a single tilted plane. Best for a advanceflat bed.
  *
  * - AUTO_BED_LEVELING_BILINEAR
  *   Probe several points in a grid.
@@ -1802,7 +1802,7 @@
 // Use this option to override the number of step signals required to
 // move between next/prev menu items.
 //
-#define ENCODER_STEPS_PER_MENU_ITEM 2 //MFD: enabled this: was 1 and disabled
+#define ENCODER_STEPS_PER_MENU_ITEM 1 //MFD: enabled this: was 1 and disabled
 
 /**
  * Encoder Direction Options

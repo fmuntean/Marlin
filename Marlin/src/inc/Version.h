@@ -31,16 +31,16 @@
 /**
  * Verbose version identifier containing a unique identifier, such as the
  * vendor name, download location, GitHub account, etc.
- */
+   */
 #ifndef DETAILED_BUILD_VERSION
   #define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION
 #endif
 
 /**
- * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
- * here we define this default string as the date where the latest release
- * version was tagged.
- */
+   * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
+   * here we define this default string as the date where the latest release
+   * version was tagged.
+   */
 #ifndef STRING_DISTRIBUTION_DATE
   #define STRING_DISTRIBUTION_DATE "2020-08-19"
 #endif
@@ -50,7 +50,7 @@
  * Set based on the release version number. Used to catch an attempt to use
  * older configurations. Override these if using a custom versioning scheme
  * to alert users to major changes.
- */
+   */
 
 #define MARLIN_HEX_VERSION 020006
 #ifndef REQUIRED_CONFIGURATION_H_VERSION
@@ -61,17 +61,17 @@
 #endif
 
 /**
- * The protocol for communication to the host. Protocol indicates communication
- * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
- * (Other behaviors are given by the firmware version and capabilities report.)
- */
+   * The protocol for communication to the host. Protocol indicates communication
+   * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
+   * (Other behaviors are given by the firmware version and capabilities report.)
+   */
 #ifndef PROTOCOL_VERSION
   #define PROTOCOL_VERSION "1.0"
 #endif
 
 /**
  * Define a generic printer name to be output to the LCD after booting Marlin.
- */
+   */
 #ifndef MACHINE_NAME
   #define MACHINE_NAME "3D Printer"
 #endif
@@ -80,14 +80,14 @@
  * Website where users can find Marlin source code for the binary installed on the
  * device. Override this if you provide public source code download. (GPLv3 requires
  * providing the source code to your customers.)
- */
+   */
 #ifndef SOURCE_CODE_URL
   #define SOURCE_CODE_URL "https://github.com/MarlinFirmware/Marlin"
 #endif
 
 /**
- * Default generic printer UUID.
- */
+   * Default generic printer UUID.
+   */
 #ifndef DEFAULT_MACHINE_UUID
   #define DEFAULT_MACHINE_UUID "cede2a2f-41a2-4748-9b12-c55c62f367ff"
 #endif
