@@ -132,12 +132,12 @@
 // The following define selects which electronics board you have.
 // Please choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_EFB 
+  #define MOTHERBOARD BOARD_RAMPS_13_EFB //MFD: was BOARD_RAMPS_14_EFB
 #endif
 
 // Optional custom name for your RepStrap or other custom machine
 // Displayed in the LCD "Ready" message
-#define CUSTOM_MACHINE_NAME "FolgerTech-2020 v9"
+#define CUSTOM_MACHINE_NAME "FolgerTech-2020 v9.1"
 
 // Define this to set a unique identifier for this printer, (Used by some programs to differentiate between machines)
 // You can use an online service to generate a random UUID. (eg http://www.uuidgenerator.net/version4)
@@ -647,15 +647,17 @@
  *          TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-//MFD: enabled DRV8825 1/32 microsteps
-#define X_DRIVER_TYPE  DRV8825
-#define Y_DRIVER_TYPE  DRV8825
-#define Z_DRIVER_TYPE  DRV8825
+
+
+//MFD: enabled this
+#define X_DRIVER_TYPE  A4988 //DRV8825
+#define Y_DRIVER_TYPE  A4988 //DRV8825
+#define Z_DRIVER_TYPE  A4988 //DRV8825
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
 //#define Z2_DRIVER_TYPE A4988
 //#define Z3_DRIVER_TYPE A4988
-#define E0_DRIVER_TYPE DRV8825
+#define E0_DRIVER_TYPE A4988 //DRV8825
 //#define E1_DRIVER_TYPE A4988
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
@@ -664,7 +666,7 @@
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-//MFD: enabled endstop interrupt
+//MFD: enabled this
 #define ENDSTOP_INTERRUPTS_FEATURE
 
 /**
@@ -708,7 +710,10 @@
  */
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 52.2 }  // 52.4 is correct for printer as shipped
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 104.4 }   // 104.4 with 32 micro steps enabled gives better results
-#define DEFAULT_AXIS_STEPS_PER_UNIT  {160,160,8000,191.4} //MFD: steps/mm using the 1/32 driver DRV8825 (E was measured on 2019_5_25)
+
+//this is for the nema17 Z motors #define DEFAULT_AXIS_STEPS_PER_UNIT  {160,160,8010,180} //MFD: steps using the 1/32 driver DRV8825
+#define DEFAULT_AXIS_STEPS_PER_UNIT  {80,80,960,90} //MFD: steps using the 1/16 driver A4988 and the smaller Z mottors 
+
 
 
 /**
@@ -1103,7 +1108,7 @@
  * - AUTO_BED_LEVELING_LINEAR
  *   Probe several points in a grid.
  *   You specify the rectangle and the density of sample points.
- *   The result is a single tilted plane. Best for a advanceflat bed.
+ *   The result is a single tilted plane. Best for a flat bed.
  *
  * - AUTO_BED_LEVELING_BILINEAR
  *   Probe several points in a grid.
@@ -1303,7 +1308,7 @@
 
 // Homing speeds (mm/m)
 #define HOMING_FEEDRATE_XY (40*60)
-#define HOMING_FEEDRATE_Z  (55)
+#define HOMING_FEEDRATE_Z  (5) //was when using the nema17 motors for z axis (55)
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1413,12 +1418,12 @@
 // Preheat Constants
 #define PREHEAT_1_LABEL       "PLA"
 #define PREHEAT_1_TEMP_HOTEND 180
-#define PREHEAT_1_TEMP_BED     70
+#define PREHEAT_1_TEMP_BED     50
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "ABS"
 #define PREHEAT_2_TEMP_HOTEND 240
-#define PREHEAT_2_TEMP_BED    110
+#define PREHEAT_2_TEMP_BED    70
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
 /**
@@ -1436,7 +1441,7 @@
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+  #define NOZZLE_PARK_POINT { (X_MAX_POS - 10), (Y_MAX_POS - 10), 20 }
   #define NOZZLE_PARK_XY_FEEDRATE 100   // (mm/s) X and Y axes feedrate (also used for delta Z axis)
   #define NOZZLE_PARK_Z_FEEDRATE 5      // (mm/s) Z axis feedrate (not used for delta printers)
 #endif
@@ -1630,7 +1635,7 @@
 // Use this option to override the number of step signals required to
 // move between next/prev menu items.
 //
-#define ENCODER_STEPS_PER_MENU_ITEM 1 //MFD: enabled this: was 1 and disabled
+#define ENCODER_STEPS_PER_MENU_ITEM 2 //MFD: enabled this: was 1 and disabled
 
 /**
  * Encoder Direction Options
@@ -1693,7 +1698,7 @@
 //
 // Note: Usually sold with a white PCB.
 //
-//#define REPRAP_DISCOUNT_SMART_CONTROLLER //MFD: this is the one I have on the printer
+#define REPRAP_DISCOUNT_SMART_CONTROLLER //MFD: this is the one I have on the printer
 
 //
 // Original RADDS LCD Display+Encoder+SDCardReader
@@ -1833,7 +1838,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // http://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER  //MFD: I have this one too
 
 //
 // ReprapWorld Graphical LCD
