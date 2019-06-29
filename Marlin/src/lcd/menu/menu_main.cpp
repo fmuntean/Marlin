@@ -60,6 +60,12 @@ void menu_motion();
 void menu_temperature();
 void menu_configuration();
 
+
+#if ENABLED(CNC)
+  void menu_cnc();
+  
+#endif
+
 #if ENABLED(CUSTOM_USER_MENUS)
   void menu_user();
 #endif
@@ -165,15 +171,24 @@ void menu_main() {
 
   #if HAS_CUTTER
     SUBMENU(MSG_CUTTER(MENU), menu_spindle_laser);
-  #endif
+        #endif
 
   #if HAS_TEMPERATURE
     SUBMENU(MSG_TEMPERATURE, menu_temperature);
-  #endif
-
+    #endif
+    
+    #if ENABLED(CNC)
+      MENU_ITEM(submenu, MSG_CNC, menu_cnc);
+    #endif
   #if HAS_POWER_MONITOR
     MENU_ITEM(submenu, MSG_POWER_MONITOR, menu_power_monitor);
   #endif
+
+
+
+#if DISABLED(CNC_COORDINATE_SYSTEMS)
+  MENU_ITEM(submenu, MSG_TEMPERATURE, menu_temperature);
+#endif
 
   #if ENABLED(MIXING_EXTRUDER)
     SUBMENU(MSG_MIXER, menu_mixer);
@@ -190,7 +205,7 @@ void menu_main() {
       SUBMENU_P(PSTR(CUSTOM_USER_MENU_TITLE), menu_user);
     #else
       SUBMENU(MSG_USER_MENU, menu_user);
-    #endif
+  #endif
   #endif
 
   #if ENABLED(ADVANCED_PAUSE_FEATURE)
@@ -228,32 +243,32 @@ void menu_main() {
 
       // *** IF THIS SECTION IS CHANGED, REPRODUCE ABOVE ***
 
-      //
-      // Autostart
-      //
-      #if ENABLED(MENU_ADDAUTOSTART)
+    //
+    // Autostart
+    //
+    #if ENABLED(MENU_ADDAUTOSTART)
         ACTION_ITEM(MSG_AUTOSTART, card.beginautostart);
-      #endif
+    #endif
 
-      if (card_detected) {
-        if (!card_open) {
-          MENU_ITEM(gcode,
-            #if PIN_EXISTS(SD_DETECT)
+    if (card_detected) {
+      if (!card_open) {
+        MENU_ITEM(gcode,
+          #if PIN_EXISTS(SD_DETECT)
               MSG_CHANGE_MEDIA, M21_STR
-            #else
+          #else
               MSG_RELEASE_MEDIA, PSTR("M22")
-            #endif
-          );
+          #endif
+        );
           SUBMENU(MSG_MEDIA_MENU, TERN(PASSWORD_ON_SD_PRINT_MENU, password.media_gatekeeper, menu_media));
-        }
       }
-      else {
-        #if PIN_EXISTS(SD_DETECT)
+    }
+    else {
+      #if PIN_EXISTS(SD_DETECT)
           ACTION_ITEM(MSG_NO_MEDIA, nullptr);
-        #else
+      #else
           GCODES_ITEM(MSG_ATTACH_MEDIA, M21_STR);
-        #endif
-      }
+      #endif
+    }
     }
 
   #endif // HAS_ENCODER_WHEEL && SDSUPPORT
@@ -297,17 +312,17 @@ void menu_main() {
     // Game sub-menu or the individual game
     {
       SUBMENU(
-        #if HAS_GAME_MENU
+      #if HAS_GAME_MENU
           MSG_GAMES, menu_game
-        #elif ENABLED(MARLIN_BRICKOUT)
+      #elif ENABLED(MARLIN_BRICKOUT)
           MSG_BRICKOUT, brickout.enter_game
-        #elif ENABLED(MARLIN_INVADERS)
+      #elif ENABLED(MARLIN_INVADERS)
           MSG_INVADERS, invaders.enter_game
-        #elif ENABLED(MARLIN_SNAKE)
+      #elif ENABLED(MARLIN_SNAKE)
           MSG_SNAKE, snake.enter_game
-        #elif ENABLED(MARLIN_MAZE)
+      #elif ENABLED(MARLIN_MAZE)
           MSG_MAZE, maze.enter_game
-        #endif
+      #endif
       );
     }
   #endif

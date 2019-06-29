@@ -124,21 +124,21 @@ void lcd_move_z() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_Z), Z_AXIS); }
 #if E_MANUAL
 
   static void lcd_move_e(TERN_(MULTI_MANUAL, const int8_t eindex=-1)) {
-    if (ui.use_click()) return ui.goto_previous_screen_no_defer();
-    if (ui.encoderPosition) {
+  if (ui.use_click()) return ui.goto_previous_screen_no_defer();
+  if (ui.encoderPosition) {
       if (!ui.manual_move.processing) {
         const float diff = float(int32_t(ui.encoderPosition)) * ui.manual_move.menu_scale;
         TERN(IS_KINEMATIC, ui.manual_move.offset, current_position.e) += diff;
         ui.manual_move.soon(E_AXIS
           #if MULTI_MANUAL
-            , eindex
-          #endif
-        );
-        ui.refresh(LCDVIEW_REDRAW_NOW);
-      }
-      ui.encoderPosition = 0;
+          , eindex
+        #endif
+      );
+      ui.refresh(LCDVIEW_REDRAW_NOW);
     }
-    if (ui.should_draw()) {
+    ui.encoderPosition = 0;
+  }
+  if (ui.should_draw()) {
       TERN_(MULTI_MANUAL, MenuItemBase::init(eindex));
       MenuEditItemBase::draw_edit_screen(
         GET_TEXT(TERN(MULTI_MANUAL, MSG_MOVE_EN, MSG_MOVE_E)),
@@ -148,7 +148,7 @@ void lcd_move_z() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_Z), Z_AXIS); }
         )
       );
     } // should_draw
-  }
+      }
 
 #endif // E_MANUAL
 
@@ -195,22 +195,22 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
     SUBMENU(MSG_MOVE_1MM,  []{ _goto_manual_move( 1);    });
     SUBMENU(MSG_MOVE_01MM, []{ _goto_manual_move( 0.1f); });
     if (axis == Z_AXIS && (SHORT_MANUAL_Z_MOVE) > 0.0f && (SHORT_MANUAL_Z_MOVE) < 0.1f) {
-      char tmp[20], numstr[10];
-      // Determine digits needed right of decimal
-      const uint8_t digs = !UNEAR_ZERO((SHORT_MANUAL_Z_MOVE) * 1000 - int((SHORT_MANUAL_Z_MOVE) * 1000)) ? 4 :
-                           !UNEAR_ZERO((SHORT_MANUAL_Z_MOVE) *  100 - int((SHORT_MANUAL_Z_MOVE) *  100)) ? 3 : 2;
-      sprintf_P(tmp, GET_TEXT(MSG_MOVE_Z_DIST), dtostrf(SHORT_MANUAL_Z_MOVE, 1, digs, numstr));
+        char tmp[20], numstr[10];
+        // Determine digits needed right of decimal
+        const uint8_t digs = !UNEAR_ZERO((SHORT_MANUAL_Z_MOVE) * 1000 - int((SHORT_MANUAL_Z_MOVE) * 1000)) ? 4 :
+                             !UNEAR_ZERO((SHORT_MANUAL_Z_MOVE) *  100 - int((SHORT_MANUAL_Z_MOVE) *  100)) ? 3 : 2;
+        sprintf_P(tmp, GET_TEXT(MSG_MOVE_Z_DIST), dtostrf(SHORT_MANUAL_Z_MOVE, 1, digs, numstr));
 
       #if DISABLED(HAS_GRAPHICAL_TFT)
         extern const char NUL_STR[];
         SUBMENU_P(NUL_STR, []{ _goto_manual_move(float(SHORT_MANUAL_Z_MOVE)); });
         MENU_ITEM_ADDON_START(0 + ENABLED(HAS_CHARACTER_LCD));
         lcd_put_u8str(tmp);
-        MENU_ITEM_ADDON_END();
+      MENU_ITEM_ADDON_END();
       #else
         SUBMENU_P(tmp, []{ _goto_manual_move(float(SHORT_MANUAL_Z_MOVE)); });
       #endif
-    }
+  }
   }
   END_MENU();
 }
@@ -246,7 +246,7 @@ void menu_move() {
         case 1: GCODES_ITEM_N(0, MSG_SELECT_E, PSTR("T0")); break;
         case 2: GCODES_ITEM_N(3, MSG_SELECT_E, PSTR("T3")); break;
         case 3: GCODES_ITEM_N(2, MSG_SELECT_E, PSTR("T2")); break;
-        #if EXTRUDERS == 6
+    #if EXTRUDERS == 6
           case 4: GCODES_ITEM_N(5, MSG_SELECT_E, PSTR("T5")); break;
           case 5: GCODES_ITEM_N(4, MSG_SELECT_E, PSTR("T4")); break;
         #endif
@@ -281,19 +281,19 @@ void menu_move() {
 
     #define SUBMENU_MOVE_E(N) SUBMENU_N(N, MSG_MOVE_EN, []{ _menu_move_distance(E_AXIS, []{ lcd_move_e(MenuItemBase::itemIndex); }, MenuItemBase::itemIndex); });
 
-    #if EITHER(SWITCHING_EXTRUDER, SWITCHING_NOZZLE)
+  #if EITHER(SWITCHING_EXTRUDER, SWITCHING_NOZZLE)
 
-      // ...and the non-switching
+    // ...and the non-switching
       #if E_MANUAL == 7 || E_MANUAL == 5 || E_MANUAL == 3
         SUBMENU_MOVE_E(E_MANUAL - 1);
-      #endif
+    #endif
 
     #elif MULTI_MANUAL
 
-      // Independent extruders with one E-stepper per hotend
+    // Independent extruders with one E-stepper per hotend
       LOOP_L_N(n, E_MANUAL) SUBMENU_MOVE_E(n);
 
-    #endif
+  #endif
 
   #endif // E_MANUAL
 
