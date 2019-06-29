@@ -97,6 +97,19 @@
 #ifndef MSG_PROGRESS_BAR_TEST
   #define MSG_PROGRESS_BAR_TEST               _UxGT("Progress Bar Test")
 #endif
+#ifndef MSG_RESET_ALL
+  #define MSG_RESET_ALL                       _UxGT("Reset All Coordinates")
+#endif
+#ifndef MSG_RESET_X
+  #define MSG_RESET_X                       _UxGT("Reset X Axis")
+#endif
+#ifndef MSG_RESET_Y
+  #define MSG_RESET_Y                       _UxGT("Reset Y Axis")
+#endif
+#ifndef MSG_RESET_Z
+  #define MSG_RESET_Z                       _UxGT("Reset z Axis")
+#endif
+
 #ifndef MSG_AUTO_HOME
   #define MSG_AUTO_HOME                       _UxGT("Auto home")
 #endif
@@ -707,6 +720,9 @@
 #endif
 #ifndef MSG_MOTION
   #define MSG_MOTION                          _UxGT("Motion")
+#endif
+#ifndef MSG_CNC
+  #define MSG_CNC                          _UxGT("CNC")
 #endif
 #ifndef MSG_FILAMENT
   #define MSG_FILAMENT                        _UxGT("Filament")
@@ -1485,4 +1501,66 @@
 #endif
 #ifndef MSG_BACKLASH_SMOOTHING
   #define MSG_BACKLASH_SMOOTHING              _UxGT("Smoothing")
+#endif
+
+//----CNC specific strings
+#ifndef MSG_CNC_PROBE
+  #define MSG_CNC_PROBE                  _UxGT("XYZ Probing")
+#endif
+#ifndef MSG_CNC_PROBE_X_RIGHT
+  #define MSG_CNC_PROBE_X_RIGHT           _UxGT("X Axis right")
+#endif
+#ifndef MSG_CNC_PROBE_X_LEFT
+  #define MSG_CNC_PROBE_X_LEFT           _UxGT("X Axis left")
+#endif
+#ifndef MSG_CNC_PROBE_Y_RIGHT
+  #define MSG_CNC_PROBE_Y_RIGHT           _UxGT("Y Axis right")
+#endif
+#ifndef MSG_CNC_PROBE_Y_LEFT
+  #define MSG_CNC_PROBE_Y_LEFT           _UxGT("Y Axis left")
+#endif
+#ifndef MSG_CNC_PROBE_Z
+  #define MSG_CNC_PROBE_Z           _UxGT("Z Axis down")
+#endif
+#ifndef MSG_CNC_MILLING
+  #define MSG_CNC_MILLING                  _UxGT("Milling")
+#endif
+#ifndef MSG_CNC_MILL
+  #define MSG_CNC_MILL                   _UxGT("Mill")
+#endif
+#ifndef MSG_CNC_START
+  #define MSG_CNC_START                   _UxGT("Start")
+#endif
+#ifndef MSG_CNC_DRILL
+  #define MSG_CNC_DRILL                 _UxGT("Drill")
+#endif
+#ifndef MSG_CNC_DRILLING
+  #define MSG_CNC_DRILLING                   _UxGT("Drilling")
+#endif
+#ifndef MSG_CNC_MILLING_TOOL
+  #define MSG_CNC_MILLING_TOOL             _UxGT("Tool diameter [mm]")
+#endif
+#ifndef MSG_CNC_MILLING_OVERLAP
+  #define MSG_CNC_MILLING_OVERLAP             _UxGT("Milling Overlap")
+#endif
+#ifndef MSG_CNC_MILLING_DEPTH
+  #define MSG_CNC_MILLING_DEPTH             _UxGT("Depth [mm]")
+#endif
+#ifndef MSG_CNC_MILLING_SPEED
+  #define MSG_CNC_MILLING_SPEED             _UxGT("Speed [mm/m]")
+#endif
+#ifndef MSG_CNC_MILLING_X
+  #define MSG_CNC_MILLING_X             _UxGT("Board X size")
+#endif
+#ifndef MSG_CNC_MILLING_Y
+  #define MSG_CNC_MILLING_Y             _UxGT("Board Y size")
+#endif
+#ifndef MSG_CNC_MILLING_TOP_SURFACE
+  #define MSG_CNC_MILLING_TOP_SURFACE       _UxGT("Mill Top surface")
+#endif
+#ifndef MSG_CNC_MILLING_X_SIDE
+  #define MSG_CNC_MILLING_X_SIDE             _UxGT("Mill X side")
+#endif
+#ifndef MSG_CNC_MILLING_Y_SIDE
+  #define MSG_CNC_MILLING_Y_SIDE             _UxGT("Mill Y side")
 #endif

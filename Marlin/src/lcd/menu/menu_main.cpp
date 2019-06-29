@@ -66,6 +66,12 @@ void menu_change_filament();
 void menu_info();
 void menu_led();
 
+
+#if ENABLED(CNC)
+  void menu_cnc();
+  
+#endif
+
 #if ENABLED(MIXING_EXTRUDER)
   void menu_mixer();
 #endif
@@ -151,11 +157,18 @@ void menu_main() {
       );
       if (paused) MENU_ITEM(function, MSG_RESUME_PRINT, ui.resume_print);
     #endif
-
+    
+    #if ENABLED(CNC)
+      MENU_ITEM(submenu, MSG_CNC, menu_cnc);
+    #endif
     MENU_ITEM(submenu, MSG_MOTION, menu_motion);
   }
 
+
+
+#if DISABLED(CNC_COORDINATE_SYSTEMS)
   MENU_ITEM(submenu, MSG_TEMPERATURE, menu_temperature);
+#endif
 
   #if ENABLED(MIXING_EXTRUDER)
     MENU_ITEM(submenu, MSG_MIXER, menu_mixer);

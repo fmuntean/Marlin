@@ -435,7 +435,7 @@ void menu_motion() {
   //
   // Auto Home
   //
-  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
+  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 O"));
   #if ENABLED(INDIVIDUAL_AXIS_HOMING_MENU)
     MENU_ITEM(gcode, MSG_AUTO_HOME_X, PSTR("G28 X"));
     MENU_ITEM(gcode, MSG_AUTO_HOME_Y, PSTR("G28 Y"));
