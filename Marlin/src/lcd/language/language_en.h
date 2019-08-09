@@ -97,18 +97,7 @@
 #ifndef MSG_PROGRESS_BAR_TEST
   #define MSG_PROGRESS_BAR_TEST               _UxGT("Progress Bar Test")
 #endif
-#ifndef MSG_RESET_ALL
-  #define MSG_RESET_ALL                       _UxGT("Reset All Coordinates")
-#endif
-#ifndef MSG_RESET_X
-  #define MSG_RESET_X                       _UxGT("Reset X Axis")
-#endif
-#ifndef MSG_RESET_Y
-  #define MSG_RESET_Y                       _UxGT("Reset Y Axis")
-#endif
-#ifndef MSG_RESET_Z
-  #define MSG_RESET_Z                       _UxGT("Reset z Axis")
-#endif
+
 
 #ifndef MSG_AUTO_HOME
   #define MSG_AUTO_HOME                       _UxGT("Auto home")
@@ -1564,3 +1553,46 @@
 #ifndef MSG_CNC_MILLING_Y_SIDE
   #define MSG_CNC_MILLING_Y_SIDE             _UxGT("Mill Y side")
 #endif
+
+#ifndef MSG_CNC_RESET_ALL
+  #define MSG_CNC_RESET_ALL                  _UxGT("Reset All Coordinates")
+#endif
+#ifndef MSG_CNC_RESET_X
+  #define MSG_CNC_RESET_X                    _UxGT("Reset X Axis")
+#endif
+#ifndef MSG_CNC_RESET_Y
+  #define MSG_CNC_RESET_Y                    _UxGT("Reset Y Axis")
+#endif
+#ifndef MSG_CNC_RESET_Z
+  #define MSG_CNC_RESET_Z                    _UxGT("Reset Z Axis")
+#endif
+
+#ifndef MSG_CNC_TOOL_WORKSPACE
+  #define MSG_CNC_TOOL_WORKSPACE                _UxGT("Set Tool Workspace")
+#endif
+#ifndef MSG_CNC_MOVE_TOOL_CHANGE
+  #define MSG_CNC_MOVE_TOOL_CHANGE                _UxGT("Move to Tool change Position")
+#endif
+#ifndef MSG_CNC_MOVE_WORKPIECE
+  #define MSG_CNC_MOVE_WORKPIECE                _UxGT("Move to Workpiece Origin")
+#endif
+#ifndef MSG_CNC_SCAN
+  #define MSG_CNC_SCAN                _UxGT("Scan gcode file")
+#endif
+#ifndef MSG_CNC_SCAN_BOX
+  #define MSG_CNC_SCAN_BOX                _UxGT("Move Around the Area")
+#endif
+#ifndef MSG_CNC_MOVE
+  #define MSG_CNC_MOVE                _UxGT("Move")
+#endif
+#ifndef MSG_CNC_SET_WORKPIECE_ORIGIN
+  #define MSG_CNC_SET_WORKPIECE_ORIGIN       _UxGT("Set Workpiece Origin")
+#endif
+#ifndef MSG_CNC_SCANNING
+  #define MSG_CNC_SCANNING       _UxGT("Scanning File...")
+#endif
+
+#ifndef MSG_CNC_DISABLE_Z
+  #define MSG_CNC_DISABLE_Z       _UxGT("Disable Z Motors")
+#endif
+
