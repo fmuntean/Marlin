@@ -149,18 +149,13 @@
   #define CNC_MAX_MILLING_SPEED 1000 //mm/minute
   #define CNC_MAX_DRILLING_SPEED 300 //mm/minute
 
-  #define USE_PROBE_BLOCK
+  //#define USE_PROBE_BLOCK
   #ifdef USE_PROBE_BLOCK
     //we need the block dimensions in mm
     #define PROBE_BLOCK_X 35
     #define PROBE_BLOCK_Y 60
     #define PROBE_BLOCK_Z 10
   #endif
-
-  //tool changing position from the PROBE BLOCK
-  #define TOOL_CHANGE_X 300
-  #define TOOL_CHANGE_Y 200
-  #define TOOL_CHANGE_Z 100
 
 #endif //CNC
 
@@ -321,7 +316,7 @@
       #define SWITCHING_TOOLHEAD_RETRACT_MM         10  // (mm)   Retract after priming length
       #define SWITCHING_TOOLHEAD_PRIME_FEEDRATE    300  // (mm/m) Extruder prime feedrate
       #define SWITCHING_TOOLHEAD_RETRACT_FEEDRATE 2400  // (mm/m) Extruder retract feedrate
-    #endif
+  #endif
   #elif ENABLED(ELECTROMAGNETIC_SWITCHING_TOOLHEAD)
     #define SWITCHING_TOOLHEAD_Z_HOP          2         // (mm) Z raise for switching
   #endif
@@ -381,6 +376,8 @@
     #define POWER_TIMEOUT 30
   #endif
 #endif
+*/
+
 
 // @section temperature
 
@@ -952,7 +949,7 @@
 /**
  * Z Servo Probe, such as an endstop switch on a rotating arm.
  */
-//#define Z_PROBE_SERVO_NR 0       // Defaults to SERVO 0 connector.
+//#define Z_PROBE_SERVO_NR 0   // Defaults to SERVO 0 connector.
 //#define Z_SERVO_ANGLES { 70, 0 } // Z Servo Deploy and Stow angles
 
 /**

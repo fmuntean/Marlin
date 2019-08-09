@@ -480,8 +480,8 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if EXTRUDERS
-        case 104: M104(); break;                                  // M104: Set hot end temperature
-        case 109: M109(); break;                                  // M109: Wait for hotend temperature to reach target
+      case 104: M104(); break;                                    // M104: Set hot end temperature
+      case 109: M109(); break;                                    // M109: Wait for hotend temperature to reach target
       #endif
 
       case 105: M105(); return;                                   // M105: Report Temperatures (and say "ok")
@@ -518,6 +518,8 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 141: M141(); break;                                  // M141: Set chamber temperature
         case 191: M191(); break;                                  // M191: Wait for chamber temperature to reach target
       #endif
+
+      case 105: M105(); return;                                   // M105: Report Temperatures (and say "ok")
 
       #if BOTH(AUTO_REPORT_TEMPERATURES, HAS_TEMP_SENSOR)
         case 155: M155(); break;                                  // M155: Set temperature auto-report interval
@@ -625,7 +627,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       case 220: M220(); break;                                    // M220: Set Feedrate Percentage: S<percent> ("FR" on your LCD)
 
       #if EXTRUDERS
-        case 221: M221(); break;                                  // M221: Set Flow Percentage
+      case 221: M221(); break;                                    // M221: Set Flow Percentage
       #endif
 
       case 226: M226(); break;                                    // M226: Wait until a pin reaches a state
@@ -762,7 +764,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if ENABLED(SDSUPPORT)
-        case 524: M524(); break;                                  // M524: Abort the current SD print job
+        case 524: M524(); break;                                   // M524: Abort the current SD print job
       #endif
 
       #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
@@ -771,6 +773,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       #if ENABLED(BAUD_RATE_GCODE)
         case 575: M575(); break;                                  // M575: Set serial baudrate
+      #endif
+
+      #if HAS_BED_PROBE
+        case 851: M851(); break;                                  // M851: Set Z Probe Z Offset
       #endif
 
       #if ENABLED(ADVANCED_PAUSE_FEATURE)
@@ -807,6 +813,8 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 810: case 811: case 812: case 813: case 814:
         case 815: case 816: case 817: case 818: case 819:
         M810_819(); break;                                        // M810-M819: Define/execute G-code macro
+        case 820:
+         M820();                                                  //display macros
       #endif
 
       #if HAS_BED_PROBE

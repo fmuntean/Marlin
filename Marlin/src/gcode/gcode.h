@@ -377,6 +377,8 @@ public:
     static inline bool set_autoreport_paused(const bool) { return false; }
   #endif
 
+  static inline void home_all_axes() { process_subcommands_now_P(PSTR("G28")); }
+
   #if ENABLED(HOST_KEEPALIVE_FEATURE)
     /**
      * States for managing Marlin and host communication
@@ -573,8 +575,8 @@ private:
   static void M105();
 
   #if HAS_FAN
-    static void M106();
-    static void M107();
+  static void M106();
+  static void M107();
   #endif
 
   #if DISABLED(EMERGENCY_PARSER)
@@ -582,7 +584,7 @@ private:
     static void M112();
     static void M410();
     TERN_(HOST_PROMPT_SUPPORT, static void M876());
-  #endif
+    #endif
 
   static void M110();
   static void M111();
@@ -637,7 +639,7 @@ private:
     static void M164();
     TERN_(DIRECT_MIXING_IN_G1, static void M165());
     TERN_(GRADIENT_MIX, static void M166());
-  #endif
+    #endif
 
   static void M200();
   static void M201();
@@ -656,7 +658,7 @@ private:
     static void M207();
     static void M208();
     TERN_(FWRETRACT_AUTORETRACT, static void M209());
-  #endif
+    #endif
 
   static void M211();
 
@@ -669,7 +671,7 @@ private:
   static void M220();
 
   #if EXTRUDERS
-    static void M221();
+  static void M221();
   #endif
 
   static void M226();
@@ -686,7 +688,7 @@ private:
   #if HAS_SERVOS
     static void M280();
     TERN_(EDITABLE_SERVO_ANGLES, static void M281());
-  #endif
+    #endif
 
   TERN_(BABYSTEPPING, static void M290());
 
@@ -802,6 +804,7 @@ private:
   #endif
 
   TERN_(GCODE_MACROS, static void M810_819());
+  TERN_(GCODE_MACROS, static void M820());
 
   TERN_(HAS_BED_PROBE, static void M851());
 
@@ -834,7 +837,7 @@ private:
     #endif
     TERN_(HYBRID_THRESHOLD, static void M913());
     TERN_(USE_SENSORLESS, static void M914());
-  #endif
+    #endif
 
   #if HAS_L64XX
     static void M122();

@@ -31,30 +31,30 @@
 class GCodeQueue {
 public:
   /**
-   * GCode line number handling. Hosts may include line numbers when sending
-   * commands to Marlin, and lines will be checked for sequentiality.
-   * M110 N<int> sets the current line number.
-   */
+ * GCode line number handling. Hosts may include line numbers when sending
+ * commands to Marlin, and lines will be checked for sequentiality.
+ * M110 N<int> sets the current line number.
+ */
 
   static long last_N[NUM_SERIAL];
 
   /**
-   * GCode Command Queue
-   * A simple ring buffer of BUFSIZE command strings.
-   *
-   * Commands are copied into this buffer by the command injectors
-   * (immediate, serial, sd card) and they are processed sequentially by
-   * the main loop. The gcode.process_next_command method parses the next
-   * command and hands off execution to individual handler functions.
-   */
+ * GCode Command Queue
+ * A simple ring buffer of BUFSIZE command strings.
+ *
+ * Commands are copied into this buffer by the command injectors
+ * (immediate, serial, sd card) and they are processed sequentially by
+ * the main loop. The gcode.process_next_command method parses the next
+ * command and hands off execution to individual handler functions.
+ */
   static uint8_t length,  // Count of commands in the queue
                  index_r; // Ring buffer read position
 
   static char command_buffer[BUFSIZE][MAX_CMD_SIZE];
 
   /**
-   * The port that the command was received on
-   */
+ * The port that the command was received on
+ */
   #if HAS_MULTI_SERIAL
     static int16_t port[BUFSIZE];
   #endif
@@ -66,19 +66,19 @@ public:
   GCodeQueue();
 
   /**
-   * Clear the Marlin command queue
-   */
+ * Clear the Marlin command queue
+ */
   static void clear();
 
   /**
    * Next Injected Command (PROGMEM) pointer. (nullptr == empty)
    * Internal commands are enqueued ahead of serial / SD commands.
-   */
+ */
   static PGM_P injected_commands_P;
 
   /**
    * Injected Commands (SRAM)
-   */
+ */
   static char injected_commands[64];
 
   /**
@@ -91,25 +91,30 @@ public:
   /**
    * Enqueue command(s) to run from SRAM. Drained by process_injected_command().
    * Aborts the current SRAM queue so only use for one or two commands.
-   */
+ */
   static inline void inject(char * const gcode) {
     strncpy(injected_commands, gcode, sizeof(injected_commands) - 1);
   }
 
   /**
    * Enqueue and return only when commands are actually enqueued
-   */
+ */
   static void enqueue_one_now(const char* cmd);
 
+#define HAS_LCD_QUEUE_NOW (ENABLED(MALYAN_LCD) || (HAS_LCD_MENU && ANY(CNC, AUTO_BED_LEVELING_UBL, PID_AUTOTUNE_MENU, ADVANCED_PAUSE_FEATURE)))
+#define HAS_QUEUE_NOW (ENABLED(SDSUPPORT) || HAS_LCD_QUEUE_NOW)
+#define HAS_QUEUE_FRONT ENABLED(ADVANCED_PAUSE_FEATURE)
+
+#if HAS_QUEUE_NOW
   /**
    * Attempt to enqueue a single G-code command
    * and return 'true' if successful.
    */
   static bool enqueue_one_P(PGM_P const pgcode);
 
-  /**
-   * Enqueue from program memory and return only when commands are actually enqueued
-   */
+    /**
+     * Enqueue from program memory and return only when commands are actually enqueued
+     */
   static void enqueue_now_P(PGM_P const cmd);
 
   /**
@@ -123,11 +128,11 @@ public:
   static void advance();
 
   /**
-   * Add to the circular command queue the next command from:
-   *  - The command-injection queue (injected_commands_P)
-   *  - The active serial input (usually USB)
-   *  - The SD card file being actively printed
-   */
+ * Add to the circular command queue the next command from:
+ *  - The command-injection queue (injected_commands_P)
+ *  - The active serial input (usually USB)
+ *  - The SD card file being actively printed
+ */
   static void get_available_commands();
 
   /**
@@ -138,7 +143,7 @@ public:
    *   N<int>  Line number of the command, if any
    *   P<int>  Planner space remaining
    *   B<int>  Block queue space remaining
-   */
+ */
   static void ok_to_send();
 
   /**
