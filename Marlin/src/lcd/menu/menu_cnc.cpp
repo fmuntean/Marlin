@@ -22,7 +22,7 @@
 
 
 /****************************************************************************
- *   Written By Florin Muntean 2019                                         *
+ *   Written By Florin Muntean (C)2019                                         *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -40,46 +40,32 @@
 
 
 /*
-     CNC Menu
-     --------
-MAIN
-  CNC
-    RESET ALL AXES
-    PROBING
-      PROBE Z DOWN
-      PROBE X RIGHT
-      PROBE X LEFT
-      PROBE Y RIGHT
-      PROBE Y LEFT
-    MILLING
-      MILL TOP
-        SET TOOL DIAMETER
-        SET PATH OVERLAP %
-        SET BOARD SIZE X
-        SET BOARD SIZE Y
-        SET MILL DEPTH
-        SET MILL SPEED
-        SET MILL DIRECTION
-        Execute MILL TOP
-      MILL X SIDE
-        SET MILL SIZE
-        SET MILL DEPTH
-        SET MILL SPEED
-        Execute MILL X SIDE
-      MILL Y SIDE
-        SET MILL SIZE
-        SET MILL DEPTH
-        SET MILL SPEED
-        Execute MILL Y SIDE
-      DRILL
-        SET MILL DEPTH
-        SET MILL SPEED
-        Execute DRILL
-    RESET X AZIS
-    RESET Y AZIS
-    RESET Z AXIS
+  G54 ; Select workspace 0 (this is the machine physical workspace)
+  G55 ; Select workspace 1 (this will be the tool change workspace) 
+  G56 ; Select workspace 2 (this will be the workpiece milling workspace)
 
- */
+
+
+  Main process:
+    1. if not using home switches and homing select CNC -> Reset all Axes
+    2. Move to tool change position aka where the z probing is done using MOVE Axis menu
+    3. Set or change the Z probing offset if necessary CNC -> XYZ Probing -> Z probe offset
+    3. CNC -> XYZ Probing -> Z probe down 
+    4. Move to work piece origin using MOVE Axis menu
+    5. CNC -> Set Workpiece Origin 
+    6. Start the printing
+
+    For Change Tool script use:
+    M25  ; pause 
+    M801 ; use M801 macro to move to the position
+    #    ; wait here for pause to take effect
+    ; change tool
+    ; using CNC -> XYZ Probing -> Z probe down will reset the tool Z 
+    ; use CNC -> Move to Workpiece origin
+    ; resume will continue priting with the new tool now
+
+
+*/
 
 
 
@@ -87,6 +73,7 @@ MAIN
 
 #if HAS_LCD_MENU && ENABLED(CNC)
 
+#include "../../core/macros.h"
 #include "menu.h"
 #include "../../module/motion.h"
 #include "../../module/stepper.h"
@@ -94,6 +81,8 @@ MAIN
 #include "../../gcode/gcode.h"
 #include "../../gcode/parser.h"
 #include "../../sd/cardreader.h"
+#include "../../module/printcounter.h"
+#include "../../module/endstops.h"
 
 #if ENABLED(DELTA)
   #include "../../module/delta.h"
@@ -105,40 +94,16 @@ MAIN
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
-extern millis_t manual_move_start_time;
-extern int8_t manual_move_axis;
-#if IS_KINEMATIC
-  extern float manual_move_offset;
-#endif
+//extern millis_t manual_move_start_time;
+//extern int8_t manual_move_axis;
+//#if IS_KINEMATIC
+//  extern float manual_move_offset;
+//#endif
 
-//
-// "Motion" > "Move Axis" submenu
-// most of it used directly from menu_motion.cpp
-//
-
-//these are defined by menu motion
-extern void lcd_move_x();
-extern void lcd_move_y();
-extern void lcd_move_z();
-
-//defined under the lcd move menu
-extern void lcd_move_get_x_amount();
-extern void lcd_move_get_y_amount();
-extern void lcd_move_get_z_amount();
-
-/* 
-#if ENABLED(DELTA)
-  void lcd_lower_z_to_clip_height() {
-    line_to_z(delta_clip_start_height);
-    ui.synchronize();
-  }
-#endif
-*/
 
 void reset_all_axes(){
- //run the G92 X0 Y0 Z0
- //enqueue_and_echo_commands_now_P(PSTR("G92 X0 Y0 Z0"));
- //G92 applies offsets only  so we can't use it here
+  //Setting machine physical origin helps especially if not using home switches
+  //G92 applies offsets only  so we can't use it here
 
   //enable all steppers to make sure they keep their position
   enable_all_steppers();
@@ -184,6 +149,8 @@ static float millingZ = DEFAULT_CNC_MILLING_Z;
 static float toolDiameter  = DEFAULT_CNC_TOOL_DIAMETER;
 static float millSpeed     = DEFAULT_CNC_MILLING_SPEED;
 static uint8_t millOverlap   = DEFAULT_CNC_MILLING_OVERLAP;
+static float zProbeOffset = 0;
+
 
 static float scan[4]; //used to keep the min max for x and Y during scanning
 #define MINX scan[0]
@@ -233,6 +200,8 @@ G56 ; Select workspace 2 (this will be the milling workspace)
 G92 X0 Y0 Z0 ;after we manually moved to the desired starting position for milling
 ;at this point we can start milling
 */
+
+#ifdef USE_PROBE_BLOCK
 void cnc_tool_workspace(){
   char cmd[50],str_1[16];//,str_2[16];
 
@@ -304,6 +273,10 @@ void cnc_tool_workspace(){
   //sprintf_P(cmd, PSTR("G0 X0 Y0 Z0"),str_1);  
   //cnc_process_command(cmd);
 }
+#else
+  void cnc_tool_workspace(){}; 
+#endif
+
 
 
 
@@ -605,71 +578,41 @@ void cnc_start_drilling(){
 
 
 void set_workpiece_origin(){
-  cnc_process_command_P(PSTR("G56\nG92 X0 Y0 Z0\nM300"));
+  cnc_process_command_P(PSTR("G56\nG92 X0 Y0\nM300")); //we keep the same Z as before
   ui.return_to_status();
 }
 
-//CNC -> MOVE AXIS submenu
-void menu_cnc_move() {
-  START_MENU();
-  MENU_BACK(MSG_CNC);
-
-  #if HAS_SOFTWARE_ENDSTOPS && ENABLED(SOFT_ENDSTOPS_MENU_ITEM)
-    MENU_ITEM_EDIT(bool, MSG_LCD_SOFT_ENDSTOPS, &soft_endstops_enabled);
-  #endif
-
-  if (
-    #if IS_KINEMATIC || ENABLED(NO_MOTION_BEFORE_HOMING)
-      all_axes_homed()
-    #else
-      true
-    #endif
-  ) {
-    if (
-      #if ENABLED(DELTA)
-        current_position[Z_AXIS] <= delta_clip_start_height
-      #else
-        true
-      #endif
-    ) {
-      MENU_ITEM(submenu, MSG_MOVE_X, lcd_move_get_x_amount);
-      MENU_ITEM(submenu, MSG_MOVE_Y, lcd_move_get_y_amount);
-    }
-    #if ENABLED(DELTA)
-      else
-        MENU_ITEM(function, MSG_FREE_XY, lcd_lower_z_to_clip_height);
-    #endif
-
-    MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_get_z_amount);
+void probing_z_down(){
+  char cmd[50],str_1[10];
+  dtostrf(zProbeOffset, 1, 3, str_1);
+  sprintf_P(cmd, PSTR("G56\nG91\nG38.2 Z-10\nG90\nG92 Z%s"),str_1);
+  cnc_process_command(cmd); 
+  if (READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING) //probe endstop hit
+  {
+    cnc_process_command_P(PSTR("G1 Z10"));
+    cnc_process_command_P(PSTR("G55\nG90\nG92 X0 Y0 Z0"));
+    cnc_process_command_P(PSTR("M810 G55|G0 Z0|G0 X0 Y0\nG56"));
+    
+    ui.return_to_status();
   }
-  //else
-  //  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
- 
-  END_MENU();
 }
+
+#define busy (IS_SD_PRINTING() || print_job_timer.isRunning() || print_job_timer.isPaused())
 
 //CNC -> PROBING submenu
 void menu_cnc_probing() {
   START_MENU();
   MENU_BACK(MSG_CNC);
 
-  //the most used command here is to set the Z axis when chaning tools
-  MENU_ITEM(gcode, MSG_CNC_PROBE_Z, PSTR("G56\nG91\nG38.2 Z-10\nG90\nG92 Z0"));
+  //the most used command here is to set the Z axis when changing tools so we put it first
+  MENU_ITEM(function, MSG_CNC_PROBE_Z, probing_z_down);
 
   
-  //establish the cnc tool workspace
-  MENU_ITEM(function, MSG_CNC_TOOL_WORKSPACE,cnc_tool_workspace);
 
-  //this creates and executes a macro to move to specific location and can be used during the tool change procedure 
-  // so M810 is set to move to the Tool Change position
-  MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, PSTR("M810 G55|G0 Z" STRINGIFY(TOOL_CHANGE_Z) "|G0 X" STRINGIFY(TOOL_CHANGE_X) " Y" STRINGIFY(TOOL_CHANGE_Y) "\nM810" ));
-
-  MENU_ITEM(function, MSG_CNC_SET_WORKPIECE_ORIGIN, set_workpiece_origin);
-
-  MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, PSTR("G56\nG0 X0 Y0 Z0"));
-
-  MENU_ITEM_EDIT(float3, MSG_CNC_MILLING_TOOL, &toolDiameter, 0,CNC_MAX_TOOL_DIAMETER);
-  
+  if (!busy){
+    MENU_ITEM_EDIT(float3, MSG_ZPROBE_ZOFFSET, &zProbeOffset , -50,50);
+    MENU_ITEM_EDIT(float3, MSG_CNC_MILLING_TOOL, &toolDiameter, 0,CNC_MAX_TOOL_DIAMETER);
+  }
   
   //MENU_ITEM(gcode, MSG_CNC_PROBE_X_RIGHT, PSTR("G91\nG38.2 X20\nG90\nG92 Z0"));
   //MENU_ITEM(gcode, MSG_CNC_PROBE_X_LEFT, PSTR("G91\nG38.2 X-20\nG90\nG92 Z0"));
@@ -888,15 +831,15 @@ extern int8_t sd_top_line, sd_items;
         if (parser.seen_axis()){
           if (parser.seen('X')){
             float x = parser.value_per_axis_units(X_AXIS);
-            MINX = MIN(MINX, x);
-            MAXX = MAX(MAXX, x);
+            MINX = _MIN(MINX, x);
+            MAXX = _MAX(MAXX, x);
             //SERIAL_ECHOPAIR_F("X=",x,2);
           }
 
           if (parser.seen('Y')){
           float y = parser.value_per_axis_units(Y_AXIS);
-          MINY = MIN(MINY, y);
-          MAXY = MAX(MAXY, y);
+          MINY = _MIN(MINY, y);
+          MAXY = _MAX(MAXY, y);
           //SERIAL_ECHOLNPAIR_F(" Y=",y,2);
           }
 
@@ -1117,8 +1060,11 @@ void menu_cnc() {
   //
   MENU_BACK(MSG_MAIN);
 
+  
+
   //Resetting coordinates
-  MENU_ITEM(function, MSG_CNC_RESET_ALL, reset_all_axes);
+  if (!busy)
+    MENU_ITEM(function, MSG_CNC_RESET_ALL, reset_all_axes);
   
   
   
@@ -1128,15 +1074,35 @@ void menu_cnc() {
   #if ENABLED(DELTA)
     if (all_axes_homed())
   #endif
-  //    MENU_ITEM(submenu, MSG_MOVE_AXIS, menu_cnc_move);
-
-
-
-  MENU_ITEM(submenu, MSG_CNC_PROBE,   menu_cnc_probing);
-  MENU_ITEM(submenu, MSG_CNC_MILLING, menu_cnc_milling);
   
-  MENU_ITEM(submenu, MSG_CNC_SCAN,menu_cnc_scan);
 
+  if (busy)
+  {
+    //the most used command here is to set the Z axis when changing tools so we put it first
+    MENU_ITEM(function,MSG_CNC_PROBE " " MSG_CNC_PROBE_Z, probing_z_down);
+  }else
+    MENU_ITEM(submenu, MSG_CNC_PROBE,   menu_cnc_probing);
+
+  //establish the cnc tool workspace
+  if (!busy)
+    MENU_ITEM(function, MSG_CNC_TOOL_WORKSPACE,cnc_tool_workspace);
+
+  //this creates and executes a macro to move to specific location and can be used during the tool change procedure 
+  // so M810 is set to move to the Tool Change position
+  //MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, PSTR("M810 G55|G0 Z" STRINGIFY(TOOL_CHANGE_Z) "|G0 X" STRINGIFY(TOOL_CHANGE_X) " Y" STRINGIFY(TOOL_CHANGE_Y) "\nM810" ));
+  MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, PSTR("M810" ));
+
+  if (!busy)
+    MENU_ITEM(function, MSG_CNC_SET_WORKPIECE_ORIGIN, set_workpiece_origin);
+
+  MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, PSTR("G56\nG0 X0 Y0"));
+
+
+  if (!busy)
+  {
+    MENU_ITEM(submenu, MSG_CNC_MILLING, menu_cnc_milling);
+    MENU_ITEM(submenu, MSG_CNC_SCAN,menu_cnc_scan);
+  }
   //settings
   MENU_ITEM(submenu, MSG_CONFIGURATION,menu_cnc_config);
 

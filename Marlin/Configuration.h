@@ -150,18 +150,13 @@
   #define CNC_MAX_MILLING_SPEED 1000 //mm/minute
   #define CNC_MAX_DRILLING_SPEED 300 //mm/minute
 
-  #define USE_PROBE_BLOCK
+  //#define USE_PROBE_BLOCK
   #ifdef USE_PROBE_BLOCK
     //we need the block dimensions in mm
     #define PROBE_BLOCK_X 35
     #define PROBE_BLOCK_Y 60
     #define PROBE_BLOCK_Z 10
   #endif
-
-  //tool changing position from the PROBE BLOCK
-  #define TOOL_CHANGE_X 300
-  #define TOOL_CHANGE_Y 200
-  #define TOOL_CHANGE_Z 100
 
 #endif //CNC
 
@@ -340,8 +335,9 @@
  *
  * :{ 0:'No power switch', 1:'ATX', 2:'X-Box 360' }
  */
-#define POWER_SUPPLY 0
+//#define POWER_SUPPLY 0
 
+/*
 #if POWER_SUPPLY > 0
   // Enable this option to leave the PSU off at startup.
   // Power to steppers and heaters will need to be turned on with M80.
@@ -356,6 +352,8 @@
   #endif
 
 #endif
+*/
+
 
 // @section temperature
 
