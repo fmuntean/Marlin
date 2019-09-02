@@ -28,7 +28,7 @@
 #include "../../queue.h"
 #include "../../parser.h"
 
-char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1] = {{ 0 }};
+//char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1] = {{ 0 }};
 
 /**
  * M810_819: Set/execute a G-code macro.
@@ -36,35 +36,19 @@ char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1] = {{ 0 }};
  * Usage:
  *   M810 <command>|...   Set Macro 0 to the given commands, separated by the pipe character
  *   M810                 Execute Macro 0
+ *   M820 displays defined macros
  */
-void GcodeSuite::M810_819() {
-  const uint8_t index = parser.codenum - 810;
-  if (index >= GCODE_MACROS_SLOTS) return;
 
-  const size_t len = strlen(parser.string_arg);
+extern char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
 
-  if (len) {
-    // Set a macro
-    if (len > GCODE_MACROS_SLOT_SIZE)
-      SERIAL_ERROR_MSG("Macro too long.");
-    else {
-      char c, *s = parser.string_arg, *d = gcode_macros[index];
-      do {
-        c = *s++;
-        *d++ = c == '|' ? '\n' : c;
-      } while (c);
-    }
-  }
-  else {
-    // Execute a macro
-    char cmd[GCODE_MACROS_SLOT_SIZE]; //nedsto copy it over so we can executre multiple times.
-    char c, *s = gcode_macros[index],*d=cmd;
-    do {
-      c= *s++;
-      *d++ = c;
-    }while(c);
-    if (strlen(cmd)) process_subcommands_now(cmd); //this destroys the cmd leaving only tye first command inside.
+void GcodeSuite::M820() {
+  for(byte i=0;i<GCODE_MACROS_SLOTS;i++){
+    char * const cmd = gcode_macros[i];
+    SERIAL_ECHOPGM("M81"); SERIAL_PRINT(i,DEC); SERIAL_ECHOPGM(" : ");
+    SERIAL_ECHO(cmd); SERIAL_EOL();
+
   }
 }
 
 #endif // GCODE_MACROS
+
