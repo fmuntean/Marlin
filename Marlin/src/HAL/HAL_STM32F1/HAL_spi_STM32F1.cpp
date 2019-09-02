@@ -1,10 +1,10 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
- * Copyright (C) 2017 Victor Perez
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 /**
  * Software SPI functions originally from Arduino Sd2Card Library
- * Copyright (C) 2009 by William Greiman
+ * Copyright (c) 2009 by William Greiman
  */
 
 /**
@@ -32,34 +32,25 @@
 
 #ifdef __STM32F1__
 
-// --------------------------------------------------------------------------
-// Includes
-// --------------------------------------------------------------------------
-
 #include "../../inc/MarlinConfig.h"
 #include <SPI.h>
 
-
-// --------------------------------------------------------------------------
-// Public Variables
-// --------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------
+// ------------------------
 // Public functions
-// --------------------------------------------------------------------------
+// ------------------------
 
 #if ENABLED(SOFTWARE_SPI)
 
-  // --------------------------------------------------------------------------
+  // ------------------------
   // Software SPI
-  // --------------------------------------------------------------------------
+  // ------------------------
   #error "Software SPI not supported for STM32F1. Use hardware SPI."
 
 #else
 
-// --------------------------------------------------------------------------
+// ------------------------
 // Hardware SPI
-// --------------------------------------------------------------------------
+// ------------------------
 
 /**
  * VGPV SPI speed start and F_CPU/2, by default 72/2 = 36Mhz
@@ -73,10 +64,9 @@
  * @details Only configures SS pin since libmaple creates and initialize the SPI object
  */
 void spiBegin() {
-  #if !PIN_EXISTS(SS)
-    #error "SS_PIN not defined!"
+  #if PIN_EXISTS(SS)
+    OUT_WRITE(SS_PIN, HIGH);
   #endif
-  OUT_WRITE(SS_PIN, HIGH);
 }
 
 /**
@@ -88,15 +78,25 @@ void spiBegin() {
  * @details
  */
 void spiInit(uint8_t spiRate) {
+  /**
+   * STM32F1 APB2 = 72MHz, APB1 = 36MHz, max SPI speed of this MCU if 18Mhz
+   * STM32F1 has 3 SPI ports, SPI1 in APB2, SPI2/SPI3 in APB1
+   * so the minimum prescale of SPI1 is DIV4, SPI2/SPI3 is DIV2
+   */
+  #if SPI_DEVICE == 1
+    #define SPI_CLOCK_MAX SPI_CLOCK_DIV4
+  #else
+    #define SPI_CLOCK_MAX SPI_CLOCK_DIV2
+  #endif
   uint8_t  clock;
   switch (spiRate) {
-    case SPI_FULL_SPEED:    clock = SPI_CLOCK_DIV2 ; break;
+    case SPI_FULL_SPEED:    clock = SPI_CLOCK_MAX ;  break;
     case SPI_HALF_SPEED:    clock = SPI_CLOCK_DIV4 ; break;
     case SPI_QUARTER_SPEED: clock = SPI_CLOCK_DIV8 ; break;
     case SPI_EIGHTH_SPEED:  clock = SPI_CLOCK_DIV16; break;
     case SPI_SPEED_5:       clock = SPI_CLOCK_DIV32; break;
     case SPI_SPEED_6:       clock = SPI_CLOCK_DIV64; break;
-    default:                clock = SPI_CLOCK_DIV2; // Default from the SPI library
+    default:                clock = SPI_CLOCK_DIV2;  // Default from the SPI library
   }
   SPI.setModule(SPI_DEVICE);
   SPI.begin();
@@ -113,9 +113,7 @@ void spiInit(uint8_t spiRate) {
  * @details
  */
 uint8_t spiRec(void) {
-  WRITE(SS_PIN, LOW);
-  uint8_t returnByte = SPI.transfer(0xFF);
-  WRITE(SS_PIN, HIGH);
+  uint8_t returnByte = SPI.transfer(ff);
   return returnByte;
 }
 
@@ -129,9 +127,7 @@ uint8_t spiRec(void) {
  * @details Uses DMA
  */
 void spiRead(uint8_t* buf, uint16_t nbyte) {
-  WRITE(SS_PIN, LOW);
   SPI.dmaTransfer(0, const_cast<uint8_t*>(buf), nbyte);
-  WRITE(SS_PIN, HIGH);
 }
 
 /**
@@ -142,9 +138,7 @@ void spiRead(uint8_t* buf, uint16_t nbyte) {
  * @details
  */
 void spiSend(uint8_t b) {
-  WRITE(SS_PIN, LOW);
   SPI.send(b);
-  WRITE(SS_PIN, HIGH);
 }
 
 /**
@@ -156,23 +150,21 @@ void spiSend(uint8_t b) {
  * @details Use DMA
  */
 void spiSendBlock(uint8_t token, const uint8_t* buf) {
-  WRITE(SS_PIN, LOW);
   SPI.send(token);
   SPI.dmaSend(const_cast<uint8_t*>(buf), 512);
-  WRITE(SS_PIN, HIGH);
 }
 
 #if ENABLED(SPI_EEPROM)
 
 // Read single byte from specified SPI channel
-uint8_t spiRec(uint32_t chan) { return spiRec(); }
+uint8_t spiRec(uint32_t chan) { return SPI.transfer(ff); }
 
 // Write single byte to specified SPI channel
-void spiSend(uint32_t chan, byte b) { spiSend(b); }
+void spiSend(uint32_t chan, byte b) { SPI.send(b); }
 
 // Write buffer to specified SPI channel
 void spiSend(uint32_t chan, const uint8_t* buf, size_t n) {
-  for (size_t p = 0; p < n; p++) spiSend(buf[p]);
+  for (size_t p = 0; p < n; p++) spiSend(chan, buf[p]);
 }
 
 #endif // SPI_EEPROM
