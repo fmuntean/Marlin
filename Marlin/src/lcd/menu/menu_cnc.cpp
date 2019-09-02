@@ -1041,9 +1041,9 @@ void menu_cnc_scan() {
       card.getfilename_sorted(nr);
 
       if (card.flag.filenameIsDir)
-        MENU_ITEM(sdfolder, MSG_CARD_MENU, card);
+        MENU_ITEM(sdfolder, MSG_MEDIA_MENU, card);
       else
-        MENU_ITEM(sdfile, MSG_CARD_MENU, card);
+        MENU_ITEM(sdfile, MSG_MEDIA_MENU, card);
     }
     else {
       MENU_ITEM_DUMMY();
