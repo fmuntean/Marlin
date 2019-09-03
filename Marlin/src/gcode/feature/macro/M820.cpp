@@ -45,7 +45,7 @@ void GcodeSuite::M820() {
   for(byte i=0;i<GCODE_MACROS_SLOTS;i++){
     char * const cmd = gcode_macros[i];
     SERIAL_ECHOPGM("M81"); SERIAL_PRINT(i,DEC); SERIAL_ECHOPGM(" : ");
-    SERIAL_ECHO(cmd); SERIAL_EOL();
+    SERIAL_ECHOLN(cmd);
 
   }
 }
