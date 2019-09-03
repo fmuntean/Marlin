@@ -229,7 +229,8 @@
  */
 //#define USE_CONTROLLER_FAN //MFD: TODO find a good pin and enable it 
 #if ENABLED(USE_CONTROLLER_FAN)
-  #define CONTROLLERFAN_SPEED 255        // 255 == full speed
+  #define CONTROLLERFAN_SECS 60             // Duration in seconds for the fan to run after all motors are disabled
+  #define CONTROLLERFAN_SPEED 255           // 255 == full speed
   //#define CONTROLLERFAN_SPEED_Z_ONLY 127  // Reduce noise on machines that keep Z enabled
 #endif
 
@@ -726,9 +727,8 @@
 #endif
 
 #if HAS_LCD_MENU
-// Include a page of printer information in the LCD Main Menu
-#define LCD_INFO_MENU
-
+  // Include a page of printer information in the LCD Main Menu
+  //#define LCD_INFO_MENU
   #if ENABLED(LCD_INFO_MENU)
     //#define LCD_PRINTER_INFO_IS_BOOTSCREEN // Show bootscreen(s) instead of Printer Info pages
   #endif
@@ -2171,7 +2171,7 @@
  *  - M206 and M428 are disabled.
  *  - G92 will revert to its behavior from Marlin 1.0.
  */
-//#define NO_WORKSPACE_OFFSETS //MFD: we need this to have the G92 workign correctly with no home switches.
+//#define NO_WORKSPACE_OFFSETS //MFD: we need this to have the G92 working correctly with no home switches.
 
 /**
  * Set the number of proportional font spaces required to fill up a typical character space.

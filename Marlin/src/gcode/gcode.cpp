@@ -707,8 +707,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 810: case 811: case 812: case 813: case 814:
         case 815: case 816: case 817: case 818: case 819:
         M810_819(); break;                                        // M810-M819: Define/execute G-code macro
-        case 820:
-         M820();                                                  //display macros
+        case 820:  M820(); break;                                                 //display macros
       #endif
 
       #if ENABLED(LIN_ADVANCE)
@@ -814,7 +813,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
  * This is called from the main loop()
  */
 void GcodeSuite::process_next_command() {
-  char * const current_command = queue.buffer[queue.index_r];
+  char * const current_command = queue.command_buffer[queue.index_r];
 
   PORT_REDIRECT(queue.port[queue.index_r]);
 
@@ -823,7 +822,7 @@ void GcodeSuite::process_next_command() {
     SERIAL_ECHOLN(current_command);
     #if ENABLED(M100_FREE_MEMORY_DUMPER)
       SERIAL_ECHOPAIR("slot:", queue.index_r);
-      M100_dump_routine(PSTR("   Command Queue:"), queue.buffer, queue.buffer + sizeof(queue.buffer));
+      M100_dump_routine(PSTR("   Command Queue:"), queue.command_buffer, queue.command_buffer + sizeof(queue.command_buffer));
     #endif
   }
 

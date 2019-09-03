@@ -1022,7 +1022,7 @@ void Temperature::manage_heater() {
   #endif
 
   #if HAS_THERMAL_PROTECTION || DISABLED(PIDTEMPBED) || HAS_AUTO_FAN || HEATER_IDLE_HANDLER
-    millis_t ms = millis();
+  //  millis_t ms = millis(); //MFD: compiler says this is unused
   #endif
 
   HOTEND_LOOP() {
@@ -2996,7 +2996,7 @@ void Temperature::isr() {
           SERIAL_EOL();
         }
 
-        idle();
+        manage_inactivity();
         gcode.reset_stepper_timeout(); // Keep steppers powered
 
         const float temp = degHotend(target_extruder);
