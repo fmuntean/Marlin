@@ -160,7 +160,7 @@ static float scan[4]; //used to keep the min max for x and Y during scanning
 
 
 void cnc_process_command_P(PGM_P const cmd){
-  SERIAL_ECHOLN(cmd);
+  serialprintPGM(cmd);
   gcode.process_subcommands_now_P(cmd);
   
 }
@@ -589,9 +589,9 @@ void probing_z_down(){
   cnc_process_command(cmd); 
   if (READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING) //probe endstop hit
   {
-    cnc_process_command_P(PSTR("G1 Z10"));
-    cnc_process_command_P(PSTR("G55\nG90\nG92 X0 Y0 Z0"));
-    cnc_process_command_P(PSTR("M810 G55|G0 Z0|G0 X0 Y0\nG56"));
+    cnc_process_command_P(PSTR("G1 Z10\nM400")); //we move 10mm up
+    cnc_process_command_P(PSTR("G55\nG90\nG92 X0 Y0 Z0")); //we set this as the tool workspace origin
+    cnc_process_command_P(PSTR("M810 G55|G0 Z0|G0 X0 Y0\nG56")); //we create the macro to move to the tool change position
     
     ui.return_to_status();
   }
