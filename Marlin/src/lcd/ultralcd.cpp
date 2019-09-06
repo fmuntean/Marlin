@@ -55,9 +55,9 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
   #if ENABLED(STATUS_MESSAGE_SCROLLING)
     uint8_t MarlinUI::status_scroll_offset; // = 0
     constexpr uint8_t MAX_MESSAGE_LENGTH = _MAX(LONG_FILENAME_LENGTH, MAX_LANG_CHARSIZE * 2 * (LCD_WIDTH));
-  #else
+    #else
     constexpr uint8_t MAX_MESSAGE_LENGTH = MAX_LANG_CHARSIZE * (LCD_WIDTH);
-  #endif
+    #endif
 #elif EITHER(EXTENSIBLE_UI, DWIN_CREALITY_LCD)
   constexpr uint8_t MAX_MESSAGE_LENGTH = 63;
 #endif
@@ -129,7 +129,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 #include "../module/motion.h"
 
 #if ENABLED(AUTO_BED_LEVELING_UBL)
-  #include "../feature/bedlevel/bedlevel.h"
+ #include "../feature/bedlevel/bedlevel.h"
 #endif
 
 #if HAS_TRINAMIC_CONFIG
@@ -182,31 +182,31 @@ millis_t MarlinUI::next_button_update_ms; // = 0
   #include "../sd/cardreader.h"
 
   #if MARLINUI_SCROLL_NAME
-    uint8_t MarlinUI::filename_scroll_pos, MarlinUI::filename_scroll_max;
-  #endif
+      uint8_t MarlinUI::filename_scroll_pos, MarlinUI::filename_scroll_max;
+    #endif
 
-  const char * MarlinUI::scrolled_filename(CardReader &theCard, const uint8_t maxlen, uint8_t hash, const bool doScroll) {
-    const char *outstr = theCard.longest_filename();
-    if (theCard.longFilename[0]) {
+    const char * MarlinUI::scrolled_filename(CardReader &theCard, const uint8_t maxlen, uint8_t hash, const bool doScroll) {
+      const char *outstr = theCard.longest_filename();
+      if (theCard.longFilename[0]) {
       #if MARLINUI_SCROLL_NAME
-        if (doScroll) {
-          for (uint8_t l = FILENAME_LENGTH; l--;)
-            hash = ((hash << 1) | (hash >> 7)) ^ theCard.filename[l];      // rotate, xor
-          static uint8_t filename_scroll_hash;
-          if (filename_scroll_hash != hash) {                              // If the hash changed...
-            filename_scroll_hash = hash;                                   // Save the new hash
+          if (doScroll) {
+            for (uint8_t l = FILENAME_LENGTH; l--;)
+              hash = ((hash << 1) | (hash >> 7)) ^ theCard.filename[l];      // rotate, xor
+            static uint8_t filename_scroll_hash;
+            if (filename_scroll_hash != hash) {                              // If the hash changed...
+              filename_scroll_hash = hash;                                   // Save the new hash
             filename_scroll_max = _MAX(0, utf8_strlen(theCard.longFilename) - maxlen); // Update the scroll limit
-            filename_scroll_pos = 0;                                       // Reset scroll to the start
-            lcd_status_update_delay = 8;                                   // Don't scroll right away
+              filename_scroll_pos = 0;                                       // Reset scroll to the start
+              lcd_status_update_delay = 8;                                   // Don't scroll right away
+            }
+            outstr += filename_scroll_pos;
           }
-          outstr += filename_scroll_pos;
-        }
-      #else
-        theCard.longFilename[maxlen] = '\0'; // cutoff at screen edge
-      #endif
+        #else
+          theCard.longFilename[maxlen] = '\0'; // cutoff at screen edge
+        #endif
+      }
+      return outstr;
     }
-    return outstr;
-  }
 
 #endif
 
@@ -570,7 +570,7 @@ void MarlinUI::status_screen() {
       #endif
       goto_screen(menu_main);
       #if DISABLED(NO_LCD_REINIT)
-        init_lcd(); // May revive the LCD if static electricity killed it
+      init_lcd(); // May revive the LCD if static electricity killed it
       #endif
       return;
     }
@@ -755,13 +755,13 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
 
   #if ENABLED(AUTO_BED_LEVELING_UBL)
 
-    void MarlinUI::external_encoder() {
-      if (external_control && encoderDiff) {
-        ubl.encoder_diff += encoderDiff;  // Encoder for UBL G29 mesh editing
-        encoderDiff = 0;                  // Hide encoder events from the screen handler
-        refresh(LCDVIEW_REDRAW_NOW);      // ...but keep the refresh.
-      }
+  void MarlinUI::external_encoder() {
+    if (external_control && encoderDiff) {
+      ubl.encoder_diff += encoderDiff;  // Encoder for UBL G29 mesh editing
+      encoderDiff = 0;                  // Hide encoder events from the screen handler
+      refresh(LCDVIEW_REDRAW_NOW);      // ...but keep the refresh.
     }
+  }
 
   #endif
 
@@ -815,7 +815,7 @@ void MarlinUI::update() {
     #define RESET_STATUS_TIMEOUT() (return_to_status_ms = ms + LCD_TIMEOUT_TO_STATUS)
   #else
     #define RESET_STATUS_TIMEOUT() NOOP
-  #endif
+    #endif
 
   #ifdef LED_BACKLIGHT_TIMEOUT
     leds.update_timeout(powersupply_on);
@@ -834,10 +834,10 @@ void MarlinUI::update() {
     static bool wait_for_unclick; // = false
 
     auto do_click = [&]{
-      wait_for_unclick = true;                        //  - Set debounce flag to ignore continous clicks
+        wait_for_unclick = true;                      //  - Set debounce flag to ignore continous clicks
       lcd_clicked = !wait_for_user;                   //  - Keep the click if not waiting for a user-click
-      wait_for_user = false;                          //  - Any click clears wait for user
-      quick_feedback();                               //  - Always make a click sound
+        wait_for_user = false;                        //  - Any click clears wait for user
+        quick_feedback();                             //  - Always make a click sound
     };
 
     #if HAS_TOUCH_XPT2046
@@ -853,8 +853,8 @@ void MarlinUI::update() {
               next_button_update_ms += 250;               // Longer delay on first press
               wait_for_unclick = true;                    // Avoid Back/Select click while repeating
               chirp();
-            }
-          }
+      }
+    }
         }
         else if (!wait_for_unclick && (buttons & EN_C))   // OK button, if not waiting for a debounce release:
           do_click();
@@ -872,10 +872,10 @@ void MarlinUI::update() {
           wait_for_unclick = false;
       }
 
-    if (LCD_BACK_CLICKED()) {
-      quick_feedback();
-      goto_previous_screen();
-    }
+      if (LCD_BACK_CLICKED()) {
+        quick_feedback();
+        goto_previous_screen();
+      }
 
   #endif // HAS_LCD_MENU
 
@@ -1040,7 +1040,7 @@ void MarlinUI::update() {
           // The nextPage will already be set up on the next call.
           if (drawing_screen && (drawing_screen = u8g.nextPage())) {
             if (on_status_screen())
-              NOLESS(max_display_update_time, millis() - ms);
+            NOLESS(max_display_update_time, millis() - ms);
             return;
           }
         }
@@ -1056,7 +1056,7 @@ void MarlinUI::update() {
       // Keeping track of the longest time for an individual LCD update.
       // Used to do screen throttling when the planner starts to fill up.
       if (on_status_screen())
-        NOLESS(max_display_update_time, millis() - ms);
+      NOLESS(max_display_update_time, millis() - ms);
     }
 
     #if HAS_LCD_MENU && LCD_TIMEOUT_TO_STATUS > 0
@@ -1154,7 +1154,7 @@ void MarlinUI::update() {
 
 #if HAS_ENCODER_ACTION
 
-  /**
+    /**
    * Read encoder buttons from the hardware registers
    * Warning: This function is called from interrupt context!
    */
@@ -1262,7 +1262,7 @@ void MarlinUI::update() {
           WRITE(SHIFT_CLK, LOW);
         }
         TERN(REPRAPWORLD_KEYPAD, keypad_buttons, buttons) = ~val;
-      #endif
+          #endif
 
     } // next_button_update_ms
 
@@ -1407,7 +1407,7 @@ void MarlinUI::update() {
     // Get a pointer to the null terminator
     PGM_P pend = message + strlen_P(message);
 
-    // If length of supplied UTF8 string is greater than
+    //  If length of supplied UTF8 string is greater than
     // the buffer size, start cutting whole UTF8 chars
     while ((pend - message) > MAX_MESSAGE_LENGTH) {
       --pend;
@@ -1474,13 +1474,13 @@ void MarlinUI::update() {
 
   #if ENABLED(SDSUPPORT)
     extern bool wait_for_user, wait_for_heatup;
-  #endif
+      #endif
 
   void MarlinUI::abort_print() {
-    #if ENABLED(SDSUPPORT)
+      #if ENABLED(SDSUPPORT)
       wait_for_heatup = wait_for_user = false;
       card.flag.abort_sd_printing = true;
-    #endif
+      #endif
     #ifdef ACTION_ON_CANCEL
       host_action_cancel();
     #endif
@@ -1488,7 +1488,7 @@ void MarlinUI::update() {
     print_job_timer.stop();
     set_status_P(GET_TEXT(MSG_PRINT_ABORTED));
     TERN_(HAS_LCD_MENU, return_to_status());
-  }
+    }
 
   #if ANY(PARK_HEAD_ON_PAUSE, SDSUPPORT)
     #include "../gcode/queue.h"
