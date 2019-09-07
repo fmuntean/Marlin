@@ -210,7 +210,7 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
       #else
         SUBMENU_P(tmp, []{ _goto_manual_move(float(SHORT_MANUAL_Z_MOVE)); });
       #endif
-  }
+    }
   }
   END_MENU();
 }

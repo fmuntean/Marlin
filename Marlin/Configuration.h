@@ -508,7 +508,7 @@
 // PID Tuning Guide here: https://reprap.org/wiki/PID_Tuning
 
 // Comment the following line to disable PID and enable bang-bang.
-//#define PIDTEMP
+//#define PIDTEMP //MFD: I am disabling the PID as there is no need for CNC
 #define BANG_MAX 255     // Limits current to nozzle while in bang-bang mode; 255=full current
 #define PID_MAX BANG_MAX // Limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
 #define PID_K1 0.95      // Smoothing factor within any PID loop
@@ -788,10 +788,11 @@
  */
 //#define DEFAULT_MAX_FEEDRATE          { 120, 120, 2, 25 } //7200 7200 120 mm/min as used in gcode
 //MFD: on July 26 I updated Z speed to 5 after upgrading the power cable.
+//MFD: on Sept 6 trying to bump up the Z speed to 10 for testing.
 #define DEFAULT_MAX_FEEDRATE          { 120, 120, 5, 25 } //7200 7200 300 mm/min as used in gcode
 
 
-//MPCNC #define DEFAULT_MAX_FEEDRATE          { 120, 120, 30, 25 }
+//MPCNC #define DEFAULT_MAX_FEEDRATE          { 120, 120, 30, 25 } //7200 7200 1800 mm/min as define by MPCNC
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -821,6 +822,7 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
+//MFD: MPCNC has gthe DEFAULT_ACCELERATION set to 400 
 #define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   400    // X, Y, Z acceleration for travel (non printing) moves
@@ -1049,7 +1051,7 @@
 #define PROBING_MARGIN 10
 
 // X and Y axis travel speed (mm/m) between probes
-#define XY_PROBE_SPEED 100 //8000
+#define XY_PROBE_SPEED 100 //MFD: was 8000
 
 // Feedrate (mm/m) for the first approach when double-probing (MULTIPLE_PROBING == 2)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
@@ -1450,7 +1452,7 @@
 
 // Homing speeds (mm/m)
 #define HOMING_FEEDRATE_XY (30*60)
-#define HOMING_FEEDRATE_Z  (1*60) // (3*60)
+#define HOMING_FEEDRATE_Z  (1*60) //MFD: was (3*60)
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1844,7 +1846,7 @@
 //  If CLOCKWISE normally moves DOWN this makes it go UP.
 //  If CLOCKWISE normally moves UP this makes it go DOWN.
 //
-#define REVERSE_MENU_DIRECTION
+#define REVERSE_MENU_DIRECTION //MFD: found that is easier for me to use the menu this way
 
 //
 // This option reverses the encoder direction for Select Screen.
