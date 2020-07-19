@@ -3171,7 +3171,8 @@
 #define GCODE_MOTION_MODES  // Remember the motion mode (G0 G1 G2 G3 G5 G38.X) and apply for X Y Z E F, etc.
 
 // Enable and set a (default) feedrate for all G0 moves
-#define G0_FEEDRATE 600 //3000 // (mm/m)
+//MFD: seems that based on MPCNC comment we can't use this (https://www.v1engineering.com/marlin-firmware/)
+//#define G0_FEEDRATE 600 //3000 // (mm/m)
 #ifdef G0_FEEDRATE
   #define VARIABLE_G0_FEEDRATE // The G0 feedrate is set by F in G0 motion mode
 #endif

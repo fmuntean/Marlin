@@ -779,7 +779,9 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 //MFD: measured the X and Y movements and while X seems correct Y seems to be less than expected.
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 800, 100 }
+//#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 800, 100 } //MFD: Driver Settings: 1/32 1/16 1/8
+//MFD: on Sept 7th switching the Z axis to 4 microsteps hopping I can raise the Z speed later on.
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 400, 100 } //MFD: Driver Settings: 1/32 1/16 1/4
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -788,7 +790,7 @@
  */
 //#define DEFAULT_MAX_FEEDRATE          { 120, 120, 2, 25 } //7200 7200 120 mm/min as used in gcode
 //MFD: on July 26 I updated Z speed to 5 after upgrading the power cable.
-//MFD: on Sept 6 trying to bump up the Z speed to 10 for testing.
+//MFD: from my testing nothing above 5 works. Is there a mistake in the MPCNC firmare setting?
 #define DEFAULT_MAX_FEEDRATE          { 120, 120, 5, 25 } //7200 7200 300 mm/min as used in gcode
 
 

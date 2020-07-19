@@ -129,7 +129,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 #include "../module/motion.h"
 
 #if ENABLED(AUTO_BED_LEVELING_UBL)
- #include "../feature/bedlevel/bedlevel.h"
+  #include "../feature/bedlevel/bedlevel.h"
 #endif
 
 #if HAS_TRINAMIC_CONFIG
@@ -195,7 +195,7 @@ millis_t MarlinUI::next_button_update_ms; // = 0
             static uint8_t filename_scroll_hash;
             if (filename_scroll_hash != hash) {                              // If the hash changed...
               filename_scroll_hash = hash;                                   // Save the new hash
-            filename_scroll_max = _MAX(0, utf8_strlen(theCard.longFilename) - maxlen); // Update the scroll limit
+              filename_scroll_max = _MAX(0, utf8_strlen(theCard.longFilename) - maxlen); // Update the scroll limit
               filename_scroll_pos = 0;                                       // Reset scroll to the start
               lcd_status_update_delay = 8;                                   // Don't scroll right away
             }
@@ -373,12 +373,12 @@ void MarlinUI::init() {
   #endif // HAS_SHIFT_ENCODER
 
   #if ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
-    SET_INPUT_PULLUP(SD_DETECT_PIN);
-  #endif
+      SET_INPUT_PULLUP(SD_DETECT_PIN);
+    #endif
 
   #if HAS_ENCODER_ACTION && HAS_SLOW_BUTTONS
-    slow_buttons = 0;
-  #endif
+      slow_buttons = 0;
+    #endif
 
   update_buttons();
 
@@ -570,7 +570,7 @@ void MarlinUI::status_screen() {
       #endif
       goto_screen(menu_main);
       #if DISABLED(NO_LCD_REINIT)
-      init_lcd(); // May revive the LCD if static electricity killed it
+        init_lcd(); // May revive the LCD if static electricity killed it
       #endif
       return;
     }
@@ -647,11 +647,11 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
   #if HAS_CHIRP
     chirp(); // Buzz and wait. Is the delay needed for buttons to settle?
     #if BOTH(HAS_LCD_MENU, USE_BEEPER)
-      for (int8_t i = 5; i--;) { buzzer.tick(); delay(2); }
+        for (int8_t i = 5; i--;) { buzzer.tick(); delay(2); }
     #elif HAS_LCD_MENU
-      delay(10);
+        delay(10);
+      #endif
     #endif
-  #endif
 }
 
 ////////////////////////////////////////////
@@ -815,7 +815,7 @@ void MarlinUI::update() {
     #define RESET_STATUS_TIMEOUT() (return_to_status_ms = ms + LCD_TIMEOUT_TO_STATUS)
   #else
     #define RESET_STATUS_TIMEOUT() NOOP
-    #endif
+  #endif
 
   #ifdef LED_BACKLIGHT_TIMEOUT
     leds.update_timeout(powersupply_on);
@@ -841,8 +841,8 @@ void MarlinUI::update() {
     };
 
     #if HAS_TOUCH_XPT2046
-      if (touch_buttons) {
-        RESET_STATUS_TIMEOUT();
+        if (touch_buttons) {
+          RESET_STATUS_TIMEOUT();
         if (touch_buttons & (EN_A | EN_B)) {              // Menu arrows, in priority
           if (ELAPSED(ms, next_button_update_ms)) {
             encoderDiff = (ENCODER_STEPS_PER_MENU_ITEM) * epps * encoderDirection;
@@ -850,11 +850,11 @@ void MarlinUI::update() {
             TERN_(AUTO_BED_LEVELING_UBL, external_encoder());
             next_button_update_ms = ms + repeat_delay;    // Assume the repeat delay
             if (!wait_for_unclick) {
-              next_button_update_ms += 250;               // Longer delay on first press
+              next_button_update_ms += 250;             // Longer delay on first press
               wait_for_unclick = true;                    // Avoid Back/Select click while repeating
               chirp();
-      }
-    }
+            }
+          }
         }
         else if (!wait_for_unclick && (buttons & EN_C))   // OK button, if not waiting for a debounce release:
           do_click();
@@ -864,18 +864,18 @@ void MarlinUI::update() {
     #endif // HAS_TOUCH_XPT2046
 
       {
-        // Integrated LCD click handling via button_pressed
-        if (!external_control && button_pressed()) {
+    // Integrated LCD click handling via button_pressed
+    if (!external_control && button_pressed()) {
           if (!wait_for_unclick) do_click();              // Handle the click
-        }
-        else
-          wait_for_unclick = false;
+      }
+    else
+      wait_for_unclick = false;
       }
 
-      if (LCD_BACK_CLICKED()) {
-        quick_feedback();
-        goto_previous_screen();
-      }
+    if (LCD_BACK_CLICKED()) {
+      quick_feedback();
+      goto_previous_screen();
+    }
 
   #endif // HAS_LCD_MENU
 
@@ -889,7 +889,7 @@ void MarlinUI::update() {
 
       TERN_(HAS_ENCODER_ACTION, touch_buttons = touch.read_buttons());
 
-    #endif
+      #endif
 
     TERN_(LCD_HAS_STATUS_INDICATORS, update_indicators());
 
@@ -994,8 +994,12 @@ void MarlinUI::update() {
       }
     #endif
 
-    // Then we want to use only 50% of the time
-    const uint16_t bbr2 = planner.block_buffer_runtime() >> 1;
+    // then we want to use 1/2 of the time only.
+    //MFD: I doubled the buffer and seems that UI is unresponsive for a long time after resume printing
+    //I will divide by 4 to see if that work better as this will give the same ammount of blocks in the buffer.
+    //MFD: TODO: check if we should alos put a NOMORE than 1 second here so we at least refresh every second. 
+    uint16_t bbr2 = planner.block_buffer_runtime() >> 2;
+    //uint16_t bbr2 = planner.block_buffer_runtime() >> 1;
 
     if ((should_draw() || drawing_screen) && (!bbr2 || bbr2 > max_display_update_time)) {
 
@@ -1407,7 +1411,7 @@ void MarlinUI::update() {
     // Get a pointer to the null terminator
     PGM_P pend = message + strlen_P(message);
 
-    //  If length of supplied UTF8 string is greater than
+    // If length of supplied UTF8 string is greater than
     // the buffer size, start cutting whole UTF8 chars
     while ((pend - message) > MAX_MESSAGE_LENGTH) {
       --pend;
@@ -1474,13 +1478,13 @@ void MarlinUI::update() {
 
   #if ENABLED(SDSUPPORT)
     extern bool wait_for_user, wait_for_heatup;
-      #endif
+  #endif
 
   void MarlinUI::abort_print() {
-      #if ENABLED(SDSUPPORT)
+    #if ENABLED(SDSUPPORT)
       wait_for_heatup = wait_for_user = false;
       card.flag.abort_sd_printing = true;
-      #endif
+    #endif
     #ifdef ACTION_ON_CANCEL
       host_action_cancel();
     #endif
@@ -1488,7 +1492,7 @@ void MarlinUI::update() {
     print_job_timer.stop();
     set_status_P(GET_TEXT(MSG_PRINT_ABORTED));
     TERN_(HAS_LCD_MENU, return_to_status());
-    }
+  }
 
   #if ANY(PARK_HEAD_ON_PAUSE, SDSUPPORT)
     #include "../gcode/queue.h"
@@ -1529,9 +1533,9 @@ void MarlinUI::update() {
     MarlinUI::progress_t MarlinUI::_get_progress() {
       return (
         TERN0(LCD_SET_PROGRESS_MANUALLY, (progress_override & PROGRESS_MASK))
-        #if ENABLED(SDSUPPORT)
+      #if ENABLED(SDSUPPORT)
           ?: TERN(HAS_PRINT_PROGRESS_PERMYRIAD, card.permyriadDone(), card.percentDone())
-        #endif
+      #endif
       );
     }
 
