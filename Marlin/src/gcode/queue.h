@@ -101,11 +101,6 @@ public:
  */
   static void enqueue_one_now(const char* cmd);
 
-#define HAS_LCD_QUEUE_NOW (ENABLED(MALYAN_LCD) || (HAS_LCD_MENU && ANY(CNC, AUTO_BED_LEVELING_UBL, PID_AUTOTUNE_MENU, ADVANCED_PAUSE_FEATURE)))
-#define HAS_QUEUE_NOW (ENABLED(SDSUPPORT) || HAS_LCD_QUEUE_NOW)
-#define HAS_QUEUE_FRONT ENABLED(ADVANCED_PAUSE_FEATURE)
-
-#if HAS_QUEUE_NOW
   /**
    * Attempt to enqueue a single G-code command
    * and return 'true' if successful.

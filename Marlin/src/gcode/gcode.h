@@ -377,7 +377,6 @@ public:
     static inline bool set_autoreport_paused(const bool) { return false; }
   #endif
 
-  static inline void home_all_axes() { process_subcommands_now_P(PSTR("G28")); }
 
   #if ENABLED(HOST_KEEPALIVE_FEATURE)
     /**
