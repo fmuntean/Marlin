@@ -740,8 +740,9 @@ void MarlinUI::draw_status_screen() {
       //
       // Hotend 0 Temperature
       //
-      _draw_heater_status(H_E0, -1, blink);
-
+      #if HAS_TEMPERATURE
+        _draw_heater_status(H_E0, -1, blink);
+      #endif
       //
       // Hotend 1 or Bed Temperature
       //
@@ -758,8 +759,9 @@ void MarlinUI::draw_status_screen() {
       //
       // Hotend 0 Temperature
       //
-      _draw_heater_status(H_E0, LCD_STR_THERMOMETER[0], blink);
-
+      #if HAS_TEMPERATURE
+        _draw_heater_status(H_E0, LCD_STR_THERMOMETER[0], blink);
+      #endif
       //
       // Hotend 1 or Bed Temperature
       //
@@ -914,8 +916,9 @@ void MarlinUI::draw_status_screen() {
     //
     // Hotend 0 Temperature
     //
-    _draw_heater_status(H_E0, LCD_STR_THERMOMETER[0], blink);
-
+    #if HAS_TEMPERATURE
+      _draw_heater_status(H_E0, LCD_STR_THERMOMETER[0], blink);
+    #endif
     //
     // Z Coordinate
     //

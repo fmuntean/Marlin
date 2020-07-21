@@ -73,8 +73,6 @@
 // Author info of this build printed to the host during boot and M115
 #define STRING_CONFIG_H_AUTHOR "(V1 Engineering, Ryan, 402)" // Who made the changes.
 //#define SHOW_BOOTSCREEN
-#define STRING_SPLASH_LINE1 "402 " SHORT_BUILD_VERSION // will be shown during bootup in line 1
-#define STRING_SPLASH_LINE2 WEBSITE_URL         // will be shown during bootup in line 2
 
 /**
  * *** VENDORS PLEASE READ ***
@@ -95,6 +93,9 @@
 
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
 //#define CUSTOM_STATUS_SCREEN_IMAGE
+
+
+#define STRING_DISTRIBUTION_DATE __DATE__
 
 // @section machine
 
@@ -130,11 +131,9 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_SF
-  //#define MOTHERBOARD BOARD_RAMPS_14_EFB
+  #define MOTHERBOARD BOARD_RAMPS_14_SF //this one uses the ATMEGA256
+  // MFD: will have to investigate later if I can move to this board: #define MOTHERBOARD BOARD_RAMPS_SMART_SF //this one use arduino DUE which is 32bit
 #endif
-
-// Name displayed in the LCD "Ready" message and Info menu
 
 //This is my custom setting that adds a CNC specific menu
 #define CNC
@@ -172,7 +171,7 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#define EXTRUDERS 1
+#define EXTRUDERS 0 //MFD: was 1 and I am trying to disable them
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
@@ -376,7 +375,7 @@
     #define POWER_TIMEOUT 30
   #endif
 #endif
-*/
+
 
 
 // @section temperature
@@ -448,7 +447,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
-#define TEMP_SENSOR_0 999
+#define TEMP_SENSOR_0 0 //MFD: was 999
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -456,7 +455,7 @@
 #define TEMP_SENSOR_5 0
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
-#define TEMP_SENSOR_BED 1
+#define TEMP_SENSOR_BED 0
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
 
@@ -725,7 +724,7 @@
 //#define Z3_DRIVER_TYPE A4988
 #define E0_DRIVER_TYPE A4988
 #define E1_DRIVER_TYPE A4988
-#define E2_DRIVER_TYPE A4988
+//#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
 //#define E5_DRIVER_TYPE A4988
@@ -751,7 +750,7 @@
 //#define ENDSTOP_NOISE_THRESHOLD 2
 
 // Check for stuck or disconnected endstops during homing moves.
-//#define DETECT_BROKEN_ENDSTOP
+#define DETECT_BROKEN_ENDSTOP
 
 //=============================================================================
 //============================== Movement Settings ============================
@@ -824,18 +823,11 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-//MFD: MPCNC has gthe DEFAULT_ACCELERATION set to 400 
+//MFD: MPCNC has gthe DEFAULT_ACCELERATION set to 400
 #define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   400    // X, Y, Z acceleration for travel (non printing) moves
 
-//
-// Use Junction Deviation instead of traditional Jerk Limiting
-//
-#define JUNCTION_DEVIATION
-#if ENABLED(JUNCTION_DEVIATION)
-  #define JUNCTION_DEVIATION_MM 0.005  // (mm) Distance from real junction edge
-#endif
 
 /**
  * Default Jerk limits (mm/s)
