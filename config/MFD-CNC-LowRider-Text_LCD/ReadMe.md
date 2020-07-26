@@ -19,6 +19,11 @@ For the rest I use A4988:
   Y axis uses 1/16 microstepping giving me ~ 100 steps/mm
   Z axis uses 1/4  microstepping giving me 400 steps/mm due to the lead screw
 
+For the postprocessing in Fusion 360 I use: https://github.com/guffy1234/mpcnc_posts_processor
+https://docs.v1engineering.com/tools/milling-basics/
+
+2020-07-25:
+  Added board FAN on D10 to cool the board as now it has a case
 
 2020-07-20:
  Set the STRING_DISTRIBUTION_DATE to current build date

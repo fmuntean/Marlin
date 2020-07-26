@@ -447,7 +447,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
-#define TEMP_SENSOR_0 0 //MFD: disabled all temperature sensors
+#define TEMP_SENSOR_0 0 //MFD: was 999
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -724,7 +724,7 @@
 //#define Z3_DRIVER_TYPE A4988
 #define E0_DRIVER_TYPE A4988
 #define E1_DRIVER_TYPE A4988
-#define E2_DRIVER_TYPE A4988
+//#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
 //#define E5_DRIVER_TYPE A4988
@@ -823,7 +823,7 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-//MFD: MPCNC has the DEFAULT_ACCELERATION set to 400
+//MFD: MPCNC has gthe DEFAULT_ACCELERATION set to 400
 #define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   400    // X, Y, Z acceleration for travel (non printing) moves
