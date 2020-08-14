@@ -22,6 +22,10 @@ For the rest I use A4988:
 For the postprocessing in Fusion 360 I use: https://github.com/guffy1234/mpcnc_posts_processor
 https://docs.v1engineering.com/tools/milling-basics/
 
+2020-08-13:
+  Added endstops for X and Y + Y2 axes
+  Updated the home procedure to only home the X and Y Axes
+  
 2020-07-25:
   Added board FAN on D10 to cool the board as now it has a case
 

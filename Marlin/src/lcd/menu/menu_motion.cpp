@@ -215,12 +215,21 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
   END_MENU();
 }
 
+#ifdef CNC
+ extern void reset_all_axes(); //MFD: defined in menu_cnc.cpp
+#endif
+
+
 void menu_move() {
   START_MENU();
   BACK_ITEM(MSG_MOTION);
 
   #if BOTH(HAS_SOFTWARE_ENDSTOPS, SOFT_ENDSTOPS_MENU_ITEM)
     EDIT_ITEM(bool, MSG_LCD_SOFT_ENDSTOPS, &soft_endstops_enabled);
+  #endif
+
+  #ifdef CNC
+    ACTION_ITEM(MSG_CNC_RESET_ALL, reset_all_axes);
   #endif
 
   if (NONE(IS_KINEMATIC, NO_MOTION_BEFORE_HOMING) || all_axes_homed()) {

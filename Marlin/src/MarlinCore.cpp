@@ -219,7 +219,11 @@
 
 PGMSTR(NUL_STR, "");
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
-PGMSTR(G28_STR, "G28");
+#ifdef CNC
+  PGMSTR(G28_STR, "G28XY"); //MFD: for CNC we only home X and Y automatically we will home Z manually
+#else
+  PGMSTR(G28_STR, "G28");
+#endif
 PGMSTR(M21_STR, "M21");
 PGMSTR(M23_STR, "M23 %s");
 PGMSTR(M24_STR, "M24");

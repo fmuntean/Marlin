@@ -966,9 +966,9 @@
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
 
   // Frivolous Game Options
-  #define MARLIN_BRICKOUT //MFD: enabled for fun
-  #define MARLIN_INVADERS //MFD: enabled for fun
-  #define MARLIN_SNAKE //MFD: enabled for fun
+  //#define MARLIN_BRICKOUT
+  //#define MARLIN_INVADERS
+  //#define MARLIN_SNAKE
 
 #endif // HAS_GRAPHICAL_LCD
 
