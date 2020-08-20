@@ -106,17 +106,15 @@ void reset_all_axes(){
   //enable all steppers to make sure they keep their position
   enable_all_steppers();
 
-  //set current coordinates directly
-  current_position[X_AXIS]=0;
-  current_position[Y_AXIS]=0;
-  current_position[Z_AXIS]=0;
-
-
   //remove the ? from the LCD
   set_axis_is_at_home(X_AXIS);
   set_axis_is_at_home(Y_AXIS);
   set_axis_is_at_home(Z_AXIS);
 
+  //set current coordinates directly as the Y otherwise will be set to max position
+  current_position[X_AXIS]=0;
+  current_position[Y_AXIS]=0;
+  current_position[Z_AXIS]=0;
   sync_plan_position(); //sync the planner
 
   //audio feedback

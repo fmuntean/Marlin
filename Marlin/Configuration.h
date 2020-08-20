@@ -780,7 +780,9 @@
 //MFD: measured the X and Y movements and while X seems correct Y seems to be less than expected.
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 800, 100 } //MFD: Driver Settings: 1/32 1/16 1/8
 //MFD: on Sept 7th switching the Z axis to 4 microsteps hopping I can raise the Z speed later on.
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 400, 100 } //MFD: Driver Settings: 1/32 1/16 1/4
+//#define DEFAULT_AXIS_STEPS_PER_UNIT   { 200, 102.57, 400, 100 } //MFD: Driver Settings: 1/32 1/16 1/4
+//MFD: on Aug 19 2020 measured again X an Y
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 199.39, 99.85, 400, 100 } //MFD: Driver Settings: 1/32 1/16 1/4
 
 /**
  * Default Max Feed Rate (mm/s)
