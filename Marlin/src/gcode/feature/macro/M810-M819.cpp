@@ -57,8 +57,13 @@ void GcodeSuite::M810_819() {
   }
   else {
     // Execute a macro
-    char * const cmd = gcode_macros[index];
-    if (strlen(cmd)) process_subcommands_now(cmd);
+    char cmd[GCODE_MACROS_SLOT_SIZE]; //MFD: needs to copy it over so we can execute multiple times.
+    char c, *s = gcode_macros[index],*d=cmd;
+    do {
+      c= *s++;
+      *d++ = c;
+    }while(c);
+    if (strlen(cmd)) process_subcommands_now(cmd); //MFD: this destroys the cmd leaving only tye first command inside.
   }
 }
 
