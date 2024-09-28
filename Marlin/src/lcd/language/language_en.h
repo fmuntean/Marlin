@@ -1075,6 +1075,15 @@ namespace LanguageNarrow_en {
   LSTR MSG_PROGRESS_FEED_FSENSOR          = _UxGT("Feeding to FSensor");
 }
 
+
+#if FAN_COUNT == 1
+  #define MSG_FIRST_FAN_SPEED       MSG_FAN_SPEED
+  #define MSG_FIRST_EXTRA_FAN_SPEED MSG_EXTRA_FAN_SPEED
+#else
+  #define MSG_FIRST_FAN_SPEED       MSG_FAN_SPEED_N
+  #define MSG_FIRST_EXTRA_FAN_SPEED MSG_EXTRA_FAN_SPEED_N
+#endif
+
 namespace LanguageWide_en {
   using namespace LanguageNarrow_en;
   #if LCD_WIDTH >= 20 || HAS_DWIN_E3V2
@@ -1118,3 +1127,125 @@ namespace LanguageTall_en {
 namespace Language_en {
   using namespace LanguageTall_en;
 }
+
+
+//----CNC specific strings
+#ifndef MSG_CNC_PROBE
+  #define MSG_CNC_PROBE                  _UxGT("XYZ Probing")
+#endif
+#ifndef MSG_CNC_PROBE_X_RIGHT
+  #define MSG_CNC_PROBE_X_RIGHT           _UxGT("X Axis right")
+#endif
+#ifndef MSG_CNC_PROBE_X_LEFT
+  #define MSG_CNC_PROBE_X_LEFT           _UxGT("X Axis left")
+#endif
+#ifndef MSG_CNC_PROBE_Y_RIGHT
+  #define MSG_CNC_PROBE_Y_RIGHT           _UxGT("Y Axis right")
+#endif
+#ifndef MSG_CNC_PROBE_Y_LEFT
+  #define MSG_CNC_PROBE_Y_LEFT           _UxGT("Y Axis left")
+#endif
+#ifndef MSG_CNC_PROBE_Z
+  #define MSG_CNC_PROBE_Z           _UxGT("Z Axis down")
+#endif
+#ifndef MSG_CNC_MILLING
+  #define MSG_CNC_MILLING                  _UxGT("Milling")
+#endif
+#ifndef MSG_CNC_MILL
+  #define MSG_CNC_MILL                   _UxGT("Mill")
+#endif
+#ifndef MSG_CNC_START
+  #define MSG_CNC_START                   _UxGT("Start")
+#endif
+#ifndef MSG_CNC_DRILL
+  #define MSG_CNC_DRILL                 _UxGT("Drill")
+#endif
+#ifndef MSG_CNC_DRILLING
+  #define MSG_CNC_DRILLING                   _UxGT("Drilling")
+#endif
+#ifndef MSG_CNC_MILLING_TOOL
+  #define MSG_CNC_MILLING_TOOL             _UxGT("Tool diameter [mm]")
+#endif
+#ifndef MSG_CNC_MILLING_OVERLAP
+  #define MSG_CNC_MILLING_OVERLAP             _UxGT("Milling Overlap")
+#endif
+#ifndef MSG_CNC_MILLING_DEPTH
+  #define MSG_CNC_MILLING_DEPTH             _UxGT("Depth [mm]")
+#endif
+#ifndef MSG_CNC_MILLING_SPEED
+  #define MSG_CNC_MILLING_SPEED             _UxGT("Speed [mm/m]")
+#endif
+#ifndef MSG_CNC_MILLING_X
+  #define MSG_CNC_MILLING_X             _UxGT("Board X size")
+#endif
+#ifndef MSG_CNC_MILLING_Y
+  #define MSG_CNC_MILLING_Y             _UxGT("Board Y size")
+#endif
+#ifndef MSG_CNC_MILLING_TOP_SURFACE
+  #define MSG_CNC_MILLING_TOP_SURFACE       _UxGT("Mill Top surface")
+#endif
+#ifndef MSG_CNC_MILLING_X_SIDE
+  #define MSG_CNC_MILLING_X_SIDE             _UxGT("Mill X side")
+#endif
+#ifndef MSG_CNC_MILLING_Y_SIDE
+  #define MSG_CNC_MILLING_Y_SIDE             _UxGT("Mill Y side")
+#endif
+#ifndef MSG_CNC_RESET_ALL
+  #define MSG_CNC_RESET_ALL                  _UxGT("Reset All Coordinates")
+#endif
+#ifndef MSG_CNC_RESET_X
+  #define MSG_CNC_RESET_X                    _UxGT("Reset X Axis")
+#endif
+#ifndef MSG_CNC_RESET_Y
+  #define MSG_CNC_RESET_Y                    _UxGT("Reset Y Axis")
+#endif
+#ifndef MSG_CNC_RESET_Z
+  #define MSG_CNC_RESET_Z                    _UxGT("Reset Z Axis")
+#endif
+
+//----CNC specific strings
+#ifdef CNC
+	PROGMEM Language_Str MSG_CNC                = _UxGT("CNC");
+	PROGMEM Language_Str MSG_CNC_PROBE          = _UxGT("XYZ Probing");
+	PROGMEM Language_Str MSG_CNC_PROBE_X_RIGHT  = _UxGT("X Axis right");
+	PROGMEM Language_Str MSG_CNC_PROBE_X_LEFT   = _UxGT("X Axis left");
+	PROGMEM Language_Str MSG_CNC_PROBE_Y_RIGHT  = _UxGT("Y Axis right");
+	PROGMEM Language_Str MSG_CNC_PROBE_Y_LEFT   = _UxGT("Y Axis left");
+	PROGMEM Language_Str MSG_CNC_PROBE_Z        = _UxGT("Probing Z Axis down");
+	PROGMEM Language_Str MSG_CNC_MILLING        = _UxGT("Milling");
+	PROGMEM Language_Str MSG_CNC_MILL           = _UxGT("Mill");
+	PROGMEM Language_Str MSG_CNC_START          = _UxGT("Start");
+	PROGMEM Language_Str MSG_CNC_DRILL          = _UxGT("Drill");
+	PROGMEM Language_Str MSG_CNC_DRILLING       = _UxGT("Drilling");
+	PROGMEM Language_Str MSG_CNC_MILLING_TOOL   = _UxGT("Tool d:[mm]");
+	PROGMEM Language_Str MSG_CNC_MILLING_OVERLAP= _UxGT("Milling Overlap");
+	PROGMEM Language_Str MSG_CNC_MILLING_DEPTH  = _UxGT("Depth [mm]");
+
+	PROGMEM Language_Str MSG_CNC_MILLING_SPEED        = _UxGT("Speed [mm/m]");
+	PROGMEM Language_Str MSG_CNC_MILLING_X            = _UxGT("Board X size");
+	PROGMEM Language_Str MSG_CNC_MILLING_Y            = _UxGT("Board Y size");
+	PROGMEM Language_Str MSG_CNC_MILLING_TOP_SURFACE  = _UxGT("Mill Top surface");
+	PROGMEM Language_Str MSG_CNC_MILLING_X_SIDE       = _UxGT("Mill X side");
+	PROGMEM Language_Str MSG_CNC_MILLING_Y_SIDE       = _UxGT("Mill Y side");
+	PROGMEM Language_Str MSG_CNC_RESET_ALL            = _UxGT("Reset All Coordinates");
+
+	PROGMEM Language_Str MSG_CNC_RESET_X          = _UxGT("Reset X Axis");
+	PROGMEM Language_Str MSG_CNC_RESET_Y          = _UxGT("Reset Y Axis");
+	PROGMEM Language_Str MSG_CNC_RESET_Z          = _UxGT("Reset Z Axis");
+	PROGMEM Language_Str MSG_CNC_TOOL_WORKSPACE   = _UxGT("Set Tool Workspace");
+	PROGMEM Language_Str MSG_CNC_MOVE_TOOL_CHANGE = _UxGT("Move to Tool change Position");
+	PROGMEM Language_Str MSG_CNC_MOVE_WORKPIECE   = _UxGT("Move to Workpiece Origin");
+	PROGMEM Language_Str MSG_CNC_SCAN             = _UxGT("Scan gcode file");
+	PROGMEM Language_Str MSG_CNC_SCAN_BOX         = _UxGT("Move Around the Area");
+
+	PROGMEM Language_Str MSG_CNC_MOVE                 = _UxGT("Move");
+	PROGMEM Language_Str MSG_CNC_SET_WORKPIECE_ORIGIN = _UxGT("Set Workpiece Origin");
+	PROGMEM Language_Str MSG_CNC_SCANNING             = _UxGT("Scanning File...");
+	PROGMEM Language_Str MSG_CNC_DISABLE_Z            = _UxGT("Disable Z Motors");
+
+	PROGMEM Language_Str MSG_CNC_X          = _UxGT("X=");
+	PROGMEM Language_Str MSG_CNC_Y          = _UxGT("Y=");
+	PROGMEM Language_Str MSG_CNC_WORKPIECE  = _UxGT("WorkPiece");
+
+#endif
+

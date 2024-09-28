@@ -50,7 +50,11 @@ GCodeQueue queue;
 #endif
 
 // Frequently used G-code strings
-PGMSTR(G28_STR, "G28");
+#ifdef CNC
+  PGMSTR(G28_STR, "G28XY"); //MFD: for CNC we only home X and Y automatically we will home Z manually
+#else
+  PGMSTR(G28_STR, "G28");
+#endif
 
 GCodeQueue::SerialState GCodeQueue::serial_state[NUM_SERIAL] = { 0 };
 GCodeQueue::RingBuffer GCodeQueue::ring_buffer = { 0 };
