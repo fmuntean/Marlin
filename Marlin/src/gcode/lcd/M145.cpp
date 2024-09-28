@@ -51,7 +51,7 @@ void GcodeSuite::M145() {
     #endif
     #if HAS_HEATED_BED
       if (parser.seenval('B'))
-        mat.bed_temp = constrain(parser.value_int(), BED_MINTEMP, BED_MAX_TARGET);
+        mat.bed_temp = constrain(parser.value_int(), BED_MINTEMP, BED_MAXTEMP);
     #endif
     #if HAS_FAN
       if (parser.seenval('F'))
