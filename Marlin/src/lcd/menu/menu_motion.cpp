@@ -577,4 +577,4 @@ void menu_motion() {
   END_MENU();
 }
 
-#endif // HAS_LCD_MENU
+#endif // HAS_DISPLAY

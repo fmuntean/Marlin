@@ -1,28 +1,6 @@
-/**
- * Marlin 3D Printer Firmware
- * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- *
- * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 
 /****************************************************************************
- *   Written By Florin Muntean (C)2019                                         *
+ *   Written By Florin Muntean (C)2019                                      *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -53,7 +31,7 @@
     3. CNC -> XYZ Probing -> Z probe down
     4. Move to work piece origin using MOVE Axis menu
     5. CNC -> Set Workpiece Origin
-    6. Start the printing
+    6. Start the milling
 
     For Change Tool script use:
     M25  ; pause
@@ -62,17 +40,19 @@
     ; change tool
     ; using CNC -> XYZ Probing -> Z probe down will reset the tool Z
     ; use CNC -> Move to Workpiece origin
-    ; resume will continue priting with the new tool now
+    ; resume will continue  with the new tool now
 */
 
 
 
 #include "../../inc/MarlinConfigPre.h"
 
-#if HAS_LCD_MENU && ENABLED(CNC)
+#if HAS_DISPLAY && ENABLED(CNC)
+
+#include "menu.h"
+#include "menu_item.h"
 
 #include "../../core/macros.h"
-#include "menu.h"
 #include "../../module/motion.h"
 #include "../../module/stepper.h"
 #include "../../gcode/queue.h"
@@ -104,7 +84,7 @@ void reset_all_axes(){
   //G92 applies offsets only  so we can't use it here
 
   //enable all steppers to make sure they keep their position
-  enable_all_steppers();
+  stepper.enable_all_steppers();
 
   //remove the ? from the LCD
   set_axis_is_at_home(X_AXIS);
@@ -155,10 +135,9 @@ static float scan[4]; //used to keep the min max for x and Y during scanning
 #define MAXY scan[3]
 
 
-void cnc_process_command_P(PGM_P const cmd){
-  serialprintPGM(cmd);
-  gcode.process_subcommands_now_P(cmd);
-
+void cnc_process_command_P(FSTR_P cmd){
+  SERIAL_ECHOLN(cmd);
+  gcode.process_subcommands_now(cmd);
 }
 
 
@@ -180,12 +159,12 @@ G91
 G0 X35 + <TOOL_DIAMETER> ; move to the right making sure we clear the block
 G0 Z-15 ;move the tool down to half block size
 G38.2 X-100 ;find X
-G92 X <TOOL_DIAMETER/2> ;mark the zero point acomodating for the tool
+G92 X <TOOL_DIAMETER/2> ;mark the zero point accommodating for the tool
 G0 X10 ;move to the side
 G0 Y 60 + <TOOL_DIAMETER>  ;move to reach the other side making sure we clear the block
 G0 X-27 ;move to the middle of the block (-10-35/2)
 G38.2 Y-100; find Y
-G92 Y <TOOL_DIAMETER/2> ; mark the zero point acomodating for the tool
+G92 Y <TOOL_DIAMETER/2> ; mark the zero point accommodating for the tool
 G0 Y10 ;get the tool out of the way
 G90 ;switch to absolute position
 G0 X0 Y0 Z0 F200 ;lets move slowly to the zero position
@@ -203,16 +182,17 @@ void cnc_tool_workspace(){
 
   //G55 ;Select workspace 1 (this will be the tool workspace)
   //G91 ;relative moves
-  cnc_process_command_P(PSTR("G55\nG91"));   //relative moves
+  cnc_process_command_P(FSTR_P("G55\nG91"));   //relative moves
 
+  constexpr xyz_feedrate_t homing_feedrate_mm_m = HOMING_FEEDRATE_MM_M;
   //G38.2 Z-100 ;find Z surface
-  dtostrf(HOMING_FEEDRATE_Z, 1, 3, str_1);
+  dtostrf(homing_feedrate_mm_m.Z, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G38.2 Z-100 F%s"),str_1);
   cnc_process_command(cmd);
 
   //G92 Z0 ;set this position as zero (it is 10mm [block Z size] above the surface)
   //G0 Z10 ;move Z up
-  cnc_process_command_P(PSTR("G92 Z0\nG0 Z10"));
+  cnc_process_command_P(F("G92 Z0\nG0 Z10"));
 
   //G0 X35 + <TOOL_DIAMETER> ; move to the right making sure we clear the block
   dtostrf(toolDiameter+PROBE_BLOCK_X, 1, 3, str_1);
@@ -225,18 +205,18 @@ void cnc_tool_workspace(){
   cnc_process_command(cmd);
 
   //G38.2 X-100 ;find X
-  dtostrf(HOMING_FEEDRATE_XY, 1, 3, str_1);
+  dtostrf(homing_feedrate_mm_m.X, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G38.2 X-100 F%s"),str_1);
   cnc_process_command(cmd);
   //cnc_process_command_P(PSTR("G38.2 X-100"));
 
-  //G92 X <TOOL_DIAMETER/2> ;mark the zero point acomodating for the tool
+  //G92 X <TOOL_DIAMETER/2> ;mark the zero point accommodating for the tool
   dtostrf(toolDiameter/2, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G92 X%s"),str_1);
   cnc_process_command(cmd);
 
   //G0 X10 ;move to the side
-  cnc_process_command_P(PSTR("G0 X10"));
+  cnc_process_command_P(F("G0 X10"));
 
   //G0 Y 60 + <TOOL_DIAMETER>  ;move to reach the other side making sure we clear the block
   dtostrf(PROBE_BLOCK_Y+toolDiameter, 1, 3, str_1);
@@ -250,12 +230,12 @@ void cnc_tool_workspace(){
   cnc_process_command(cmd);
 
   //G38.2 Y-100; find Y
-  dtostrf(HOMING_FEEDRATE_XY, 1, 3, str_1);
+  dtostrf(homing_feedrate_mm_m.Y, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G38.2 Y-100 F%s"),str_1);
   cnc_process_command(cmd);
   //cnc_process_command_P(PSTR("G38.2 Y-100"));
 
-  //G92 Y <TOOL_DIAMETER/2> ; mark the zero point acomodating for the tool
+  //G92 Y <TOOL_DIAMETER/2> ; mark the zero point accommodating for the tool
   dtostrf(toolDiameter/2, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G92 Y%s"),str_1);
   cnc_process_command(cmd);
@@ -263,7 +243,7 @@ void cnc_tool_workspace(){
 
   //G0 Y10 ;get the tool out of the way
   //G90 ;switch to absolute position
-  cnc_process_command_P(PSTR("G0 Y10 Z10\nG90\nG0 X0 Y0 Z0"));
+  cnc_process_command_P(F("G0 Y10 Z10\nG90\nG0 X0 Y0 Z0"));
 
   //G0 X0 Y0 Z0 F200 ;lets move slowly to the zero position
   //sprintf_P(cmd, PSTR("G0 X0 Y0 Z0"),str_1);
@@ -288,7 +268,7 @@ void cnc_start_milling_top_xDirection(){
   float overlap = float(ui8_to_percent(millOverlap)) / 100.0f;
   float dY=((overlap*toolDiameter));
 
-  cnc_process_command_P(PSTR("G91")); //relative moves
+  cnc_process_command_P(F("G91")); //relative moves
 
   long ms=millis();
 
@@ -302,7 +282,7 @@ void cnc_start_milling_top_xDirection(){
 
     while(y<h ){
 
-      dtostrf(millSpeed, 1, 3, str_2); //trying to see if it acomodates for the infoscreen feed adjustment
+      dtostrf(millSpeed, 1, 3, str_2); //trying to see if it accommodates for the info screen feed adjustment
       sprintf_P(cmd, PSTR("G1 X%s F%s"),str_1,str_2);
       cnc_process_command(cmd);
 
@@ -355,10 +335,10 @@ void cnc_start_milling_top_xDirection(){
   } //for
 
 
-  cnc_process_command_P(PSTR("G90")); //absolute moves
+  cnc_process_command_P(F("G90")); //absolute moves
 }
 
-void cnc_start_milling_top_diagonaly(){
+void cnc_start_milling_top_diagonally(){
     char cmd[50],str_1[16],str_2[16];
 
   ui.return_to_status();
@@ -372,11 +352,11 @@ void cnc_start_milling_top_diagonaly(){
   float oY=LOGICAL_Y_POSITION(current_position[Y_AXIS]);
   float oZ=LOGICAL_Z_POSITION(current_position[Z_AXIS])+5; //we want to end up 5 mm above the surface
 
-  cnc_process_command_P(PSTR("G90\nG0 Z5")); //move up 5mm
+  cnc_process_command_P(FPSTR("G90\nG0 Z5")); //move up 5mm
 
   dtostrf(-w, 1, 3, str_1);
   dtostrf(-h, 1, 3, str_2);
-  sprintf_P(cmd, PSTR("G0 X%s Y%s"),str_1,str_2); //move to begining
+  sprintf_P(cmd, PSTR("G0 X%s Y%s"),str_1,str_2); //move to beginning
   cnc_process_command(cmd);
 
   float overlap = float(ui8_to_percent(millOverlap)) / 100.0f;
@@ -440,7 +420,7 @@ void cnc_start_milling_top_diagonaly(){
 
     }
 
-    cnc_process_command_P(PSTR("G90"));
+    cnc_process_command_P(FPSTR("G90"));
 
     dtostrf(oZ, 1, 3, str_1);
     sprintf_P(cmd, PSTR("G0 Z%s"),str_1);
@@ -465,7 +445,7 @@ void cnc_start_milling_x_side(){
   ui.set_status_P(GET_TEXT(MSG_CNC_MILLING_X_SIDE));
 
 
-  cnc_process_command_P(PSTR("G91"));
+  cnc_process_command_P(FPSTR("G91"));
 
   dtostrf(millSpeed, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G1 Z0 F%s"),str_1);
@@ -483,7 +463,7 @@ void cnc_start_milling_x_side(){
     cnc_process_command(cmd);
   }
 
-  cnc_process_command_P(PSTR("G90"));
+  cnc_process_command_P(FPSTR("G90"));
 
   ui.completion_feedback();
   ui.reset_status();
@@ -498,7 +478,7 @@ char cmd[20],str_1[16],str_2[16];
   ui.set_status_P(GET_TEXT(MSG_CNC_MILLING_Y_SIDE));
 
 
-  cnc_process_command_P(PSTR("G91"));//relative movements
+  cnc_process_command_P(FPSTR("G91"));//relative movements
 
   dtostrf(millSpeed, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G1 Z0 F%s"),str_1);
@@ -517,7 +497,7 @@ char cmd[20],str_1[16],str_2[16];
     cnc_process_command(cmd);
   }
 
-  cnc_process_command_P(PSTR("G90")); //revert to absolute
+  cnc_process_command_P(FPSTR("G90")); //revert to absolute
 
   ui.completion_feedback();
   ui.reset_status();
@@ -533,7 +513,7 @@ void cnc_start_drilling(){
   ui.set_status_P(GET_TEXT(MSG_CNC_MILLING_Y_SIDE));
 
   //the drilling algorithm
-  cnc_process_command_P(PSTR("G91\nG0 Z2"));//relative
+  cnc_process_command_P(FPSTR("G91\nG0 Z2"));//relative
 
   dtostrf(millSpeed, 1, 3, str_1);
 
@@ -541,14 +521,14 @@ void cnc_start_drilling(){
     sprintf_P(cmd, PSTR("G1 Z-3 F%s"),str_1);
     cnc_process_command(cmd);
     safe_delay(100);
-    cnc_process_command_P(PSTR("G0 Z2"));
+    cnc_process_command_P(FPSTR("G0 Z2"));
   }
 
   dtostrf(millingZ, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G0 Z%s"),str_1);
   cnc_process_command(cmd); //retract the tool back
 
-  cnc_process_command_P(PSTR("G90")); //back to absolute positioning
+  cnc_process_command_P(FPSTR("G90")); //back to absolute positioning
 
   ui.completion_feedback();
   ui.reset_status();
@@ -556,7 +536,7 @@ void cnc_start_drilling(){
 
 
 void set_workpiece_origin(){
-  cnc_process_command_P(PSTR("G56\nG92 X0 Y0\nM300")); //we keep the same Z as before
+  cnc_process_command_P(FPSTR("G56\nG92 X0 Y0\nM300")); //we keep the same Z as before
   ui.return_to_status();
 }
 
@@ -565,11 +545,11 @@ void probing_z_down(){
   dtostrf(zProbeOffset, 1, 3, str_1);
   sprintf_P(cmd, PSTR("G56\nG91\nG38.2 Z-10\nG90\nG92 Z%s"),str_1);
   cnc_process_command(cmd);
-  if (READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING) //probe endstop hit
+  if (READ(Z_MIN_PROBE_PIN) == Z_MIN_PROBE_ENDSTOP_HIT_STATE) //probe end-stop hit
   {
-    cnc_process_command_P(PSTR("G1 Z10\nM400")); //we move 10mm up
-    cnc_process_command_P(PSTR("G55\nG90\nG92 X0 Y0 Z0")); //we set this as the tool workspace origin
-    cnc_process_command_P(PSTR("M810 G55|G0 Z0|G0 X0 Y0\nG56")); //we create the macro to move to the tool change position
+    cnc_process_command_P(FPSTR("G1 Z10\nM400")); //we move 10mm up
+    cnc_process_command_P(FPSTR("G55\nG90\nG92 X0 Y0 Z0")); //we set this as the tool workspace origin
+    cnc_process_command_P(FPSTR("M810 G55|G0 Z0|G0 X0 Y0\nG56")); //we create the macro to move to the tool change position
 
     ui.return_to_status();
   }
@@ -629,7 +609,7 @@ void menu_cnc_milling_top(){
   CONFIRM_ITEM(MSG_CNC_MILLING_TOP_SURFACE,
       MSG_BUTTON_PROCEED, MSG_BUTTON_CANCEL,
       cnc_start_milling_top_xDirection, ui.goto_previous_screen,
-      GET_TEXT(MSG_CNC_MILLING_TOP_SURFACE), GET_TEXT(MSG_CNC_MILLING), PSTR("?")
+      GET_TEXT_F(MSG_CNC_MILLING_TOP_SURFACE), GET_TEXT_F(MSG_CNC_MILLING), F("?")
   );
 
   END_MENU();
@@ -649,7 +629,7 @@ void menu_cnc_milling_X_side(){
   CONFIRM_ITEM(MSG_CNC_MILLING_X_SIDE,
       MSG_BUTTON_PROCEED, MSG_BUTTON_CANCEL,
       cnc_start_milling_x_side, ui.goto_previous_screen,
-      GET_TEXT(MSG_CNC_MILLING_X_SIDE), GET_TEXT(MSG_CNC_MILLING), PSTR("?")
+      GET_TEXT_F(MSG_CNC_MILLING_X_SIDE), GET_TEXT_F(MSG_CNC_MILLING), F("?")
     );
 
 
@@ -671,7 +651,7 @@ void menu_cnc_milling_Y_side(){
   CONFIRM_ITEM(MSG_CNC_MILLING_Y_SIDE,
       MSG_BUTTON_PROCEED, MSG_BUTTON_CANCEL,
       cnc_start_milling_y_side, ui.goto_previous_screen,
-      GET_TEXT(MSG_CNC_MILLING_Y_SIDE), GET_TEXT(MSG_CNC_MILLING), PSTR("?")
+      GET_TEXT_F(MSG_CNC_MILLING_Y_SIDE), GET_TEXT_F(MSG_CNC_MILLING), F("?")
     );
 
   END_MENU();
@@ -688,7 +668,7 @@ void menu_cnc_drill(){
   CONFIRM_ITEM(MSG_CNC_DRILL,
       MSG_BUTTON_PROCEED, MSG_BUTTON_CANCEL,
       cnc_start_drilling, ui.goto_previous_screen,
-      GET_TEXT(MSG_CNC_DRILL),GET_TEXT(MSG_CNC_DRILLING),  PSTR("?")
+      GET_TEXT_F(MSG_CNC_DRILL),GET_TEXT_F(MSG_CNC_DRILLING),  F("?")
     );
 
   END_MENU();
@@ -873,7 +853,7 @@ void cnc_scan_move(){
     const bool got_click = ui.use_click();
     if (got_click){
         ui.return_to_status();
-        cnc_process_command_P("G0 X0 Y0");
+        cnc_process_command_P(F("G0 X0 Y0"));
         planner.synchronize();
         return;
     }
@@ -936,18 +916,18 @@ void cnc_scan_file(){
   CONFIRM_ITEM(MSG_CNC_MOVE,
       MSG_BUTTON_PROCEED, MSG_BUTTON_CANCEL,
       cnc_scan_move, ui.return_to_status,
-      GET_TEXT(MSG_CNC_SCAN_BOX),GET_TEXT(MSG_CNC_START),  PSTR("?")
+      GET_TEXT_F(MSG_CNC_SCAN_BOX),GET_TEXT_F(MSG_CNC_START),  F("?")
     );
   END_SCREEN();
 }
 
 class MenuItem_sdfilecnc : public MenuItem_sdbase {
   public:
-    static inline void draw(const bool sel, const uint8_t row, PGM_P const pstr, CardReader &theCard) {
+    static inline void draw(const bool sel, const uint8_t row, FSTR_P pstr, CardReader &theCard) {
         MenuItem_sdbase::draw(sel, row, pstr, theCard, false);
       }
 
-    static void action(PGM_P const pstr, CardReader &)  {
+    static void action(FSTR_P pstr, CardReader &)  {
       #if ENABLED(SD_REPRINT_LAST_SELECTED_FILE)
         // Save menu state for the selected file
         sd_encoder_position = ui.encoderPosition;
@@ -961,9 +941,9 @@ class MenuItem_sdfilecnc : public MenuItem_sdbase {
           buffer[0] = ' ';
           strcpy(buffer + 1, longest);
           MenuItem_confirm::select_screen(
-            GET_TEXT(MSG_BUTTON_PRINT), GET_TEXT(MSG_BUTTON_CANCEL),
+            GET_TEXT_F(MSG_BUTTON_PRINT), GET_TEXT_F(MSG_BUTTON_CANCEL),
             cnc_scan_file, ui.goto_previous_screen,
-            GET_TEXT(MSG_CNC_START), buffer, PSTR("?")
+            GET_EN_TEXT_F(MSG_CNC_START), buffer, F("?")
           );
         });
       #else
@@ -974,10 +954,10 @@ class MenuItem_sdfilecnc : public MenuItem_sdbase {
 
 class MenuItem_sdfoldercnc : public MenuItem_sdbase {
   public:
-    static inline void draw(const bool sel, const uint8_t row, PGM_P const pstr, CardReader &theCard) {
+    static inline void draw(const bool sel, const uint8_t row, FSTR_P pstr, CardReader &theCard) {
       MenuItem_sdbase::draw(sel, row, pstr, theCard, true);
     }
-    static void action(PGM_P const, CardReader &theCard) {
+    static void action(FSTR_P const, CardReader &theCard) {
       card.cd(theCard.filename);
       encoderTopLine = 0;
       ui.encoderPosition = 2 * (ENCODER_STEPS_PER_MENU_ITEM);
@@ -990,7 +970,13 @@ class MenuItem_sdfoldercnc : public MenuItem_sdbase {
 
 void menu_cnc_scan() {
   ui.encoder_direction_menus();
-  const uint16_t fileCnt = card.get_num_Files();
+
+  #if HAS_MARLINUI_U8GLIB
+    static int16_t fileCnt;
+    if (ui.first_page) fileCnt = card.get_num_items();
+  #else
+    const int16_t fileCnt = card.get_num_items();
+  #endif
 
   START_MENU();
     BACK_ITEM(MSG_CNC);
@@ -1002,18 +988,20 @@ void menu_cnc_scan() {
       #endif
     }
     else if (card.isMounted())
-      ACTION_ITEM_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
-
-    if (ui.should_draw()) for (uint16_t i = 0; i < fileCnt; i++) {
-      if (_menuLineNr == _thisItemNr) {
-        card.getfilename_sorted(SD_ORDER(i, fileCnt));
-        if (card.flag.filenameIsDir)
-          MENU_ITEM(sdfoldercnc, MSG_MEDIA_MENU, card);
-        else
-          MENU_ITEM(sdfilecnc, MSG_MEDIA_MENU, card);
+      ACTION_ITEM_F(F(LCD_STR_FOLDER " .."), lcd_sd_updir);
+    
+    if (ui.should_draw()) {
+      for (int16_t i = 0; i < fileCnt; i++) {
+        if (_menuLineNr != _thisItemNr)
+          SKIP_ITEM();
+        else {
+          card.selectFileByIndexSorted(i);
+          if (card.flag.filenameIsDir)
+            MENU_ITEM(sdfoldercnc, MSG_MEDIA_MENU, card);
+          else
+            MENU_ITEM(sdfilecnc, MSG_MEDIA_MENU, card);
+        }
       }
-      else
-        SKIP_ITEM();
     }
   END_MENU();
 }
@@ -1022,28 +1010,28 @@ void menu_cnc_scan() {
 /// This is the main menu for CNC commands and settings
 void menu_cnc() {
   START_MENU();
-  BACK_ITEM(MSG_MAIN); // back to ^ Main
+  BACK_ITEM(MSG_MAIN_MENU); // back to ^ Main
 
   if (busy)
   {
     //the most used command here is to set the Z axis when changing tools so we put it first
     ACTION_ITEM(MSG_CNC_PROBE_Z, probing_z_down);
-    MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, PSTR("G56\nG0 X0 Y0"));
+    MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, F("G56\nG0 X0 Y0"));
 
   }else
   {
-    ACTION_ITEM(MSG_CNC_RESET_ALL, reset_all_axes); //ususally this is the first command to run as we do not home the CNC
+    ACTION_ITEM(MSG_CNC_RESET_ALL, reset_all_axes); //usually this is the first command to run as we do not home the CNC
     MENU_ITEM(submenu, MSG_CNC_PROBE,   menu_cnc_probing);
     ACTION_ITEM(MSG_CNC_TOOL_WORKSPACE,cnc_tool_workspace); //establish the cnc tool workspace
 
     //this creates and executes a macro to move to specific location and can be used during the tool change procedure
     // so M810 is set to move to the Tool Change position
     //MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, PSTR("M810 G55|G0 Z" STRINGIFY(TOOL_CHANGE_Z) "|G0 X" STRINGIFY(TOOL_CHANGE_X) " Y" STRINGIFY(TOOL_CHANGE_Y) "\nM810" ));
-    MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, PSTR("M810" ));
+    MENU_ITEM(gcode, MSG_CNC_MOVE_TOOL_CHANGE, F("M810" ));
 
     ACTION_ITEM(MSG_CNC_SET_WORKPIECE_ORIGIN, set_workpiece_origin);
 
-    MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, PSTR("G56\nG0 X0 Y0"));
+    MENU_ITEM(gcode, MSG_CNC_MOVE_WORKPIECE, F("G56\nG0 X0 Y0"));
 
 
     MENU_ITEM(submenu, MSG_CNC_MILLING, menu_cnc_milling);
@@ -1059,11 +1047,11 @@ void menu_cnc() {
     //
     // Disable Steppers
     //
-    MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
-    MENU_ITEM(gcode, MSG_CNC_DISABLE_Z, PSTR("M84 Z"));
+    MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, F("M84"));
+    MENU_ITEM(gcode, MSG_CNC_DISABLE_Z, F("M84 Z"));
   }
 
   END_MENU();
 }
 
-#endif // HAS_LCD_MENU
+#endif // HAS_DISPLAY

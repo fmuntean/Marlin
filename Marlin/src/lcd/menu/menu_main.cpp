@@ -542,4 +542,4 @@ void menu_main() {
   END_MENU();
 }
 
-#endif // HAS_LCD_MENU
+#endif // HAS_DISPLAY
